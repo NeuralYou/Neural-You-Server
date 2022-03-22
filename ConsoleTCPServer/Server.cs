@@ -21,12 +21,11 @@ namespace ConsoleTCPServer
 				TcpClient client = listener.AcceptTcpClient();
 				NetworkStream stream = client.GetStream();
 				NeuralNetwork[] networks = processInput(stream, out float mutationRate);
-				Console.WriteLine($"Proccessed {networks.Length} networks");
+				Console.WriteLine($"Recived {networks.Length} networks");
 				Population pop = processPopulation(mutationRate, networks);
-				Console.WriteLine($"Processed population of {pop.Size()} networks");
+				Console.WriteLine($"Processed population");
 				sendResponse(pop, stream);
 				Console.WriteLine("Sent Response");
-				Console.Clear();
 			}
 		}
 
@@ -62,12 +61,9 @@ namespace ConsoleTCPServer
 			NetworkUtils.WriteInt(stream, pop.Size());
 
 			string[] stringReps = pop.SerializeAll();
-			Console.WriteLine(pop.Size());
-			Console.WriteLine(pop.Pop.Count);
 
 			foreach(NeuralNetwork p in pop.Pop)
 			{
-				Console.WriteLine("\n\n" + p);
 				NetworkUtils.WriteNN(stream, p);
 			}
 
@@ -77,9 +73,8 @@ namespace ConsoleTCPServer
 		private Population processPopulation(float mutationRate, NeuralNetwork[] networks)
 		{
 			Population pop = new Population(networks, mutationRate);
-			Console.WriteLine(pop.Size());
 			pop.ApplyGeneticOperators();
-			Console.WriteLine("After operators: " + pop.Size());
+			Console.WriteLine("Applied genetic operators");
 			return pop;
 		}
 
@@ -87,7 +82,6 @@ namespace ConsoleTCPServer
 		{
 			int length = NetworkUtils.ReadInt(stream);
 			NeuralNetwork network = NetworkUtils.ReadNN(stream, length);
-			//Console.WriteLine(JsonConvert.SerializeObject(network));
 
 			return network;
 

@@ -64,7 +64,6 @@ public class Population
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 		for(int i = 0; i < m_PopulationSize; i++)
 		{
-			Console.WriteLine("Initiated tournement");
 			newGeneration.Add(ThreeWayTournement());
 		}
 
