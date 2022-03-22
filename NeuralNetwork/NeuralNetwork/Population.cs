@@ -1,42 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 public class Population
 {
 	List<NeuralNetwork> pop;
-	float m_MutationRate;
+	public float m_MutationRate;
 	int m_PopulationSize;
-	public float MutationRate
-	{
-		get { return m_MutationRate; }
-	}
 
 	public List<NeuralNetwork> Pop
 	{
 		get { return pop; }
 	}
 
-	public Population(float i_MutationRate, int i_PopulationSize, int i_Inputs, int i_Hiddens, int i_Outputs)
+	public Population(float i_MutationRate, int i_PopulationSize, int i_Inputs, int i_Outputs)
 	{
 		m_MutationRate = i_MutationRate;
 		m_PopulationSize = i_PopulationSize;
 
-		initPopulation(i_Inputs, i_Hiddens, i_Outputs);
+		initPopulation(i_Inputs, i_Outputs);
 	}
 
 	public Population(NeuralNetwork[] networks, float i_MutationRate)
 	{
 		pop = new List<NeuralNetwork>(networks);
+		m_PopulationSize = pop.Count;
 		m_MutationRate = i_MutationRate;
 	}
-	private void initPopulation(int i_Inputs, int i_Hiddens, int i_Outputs)
+
+	private void initPopulation(int i_Inputs, int i_Outputs)
 	{
 		pop = new List<NeuralNetwork>();
 		for(int i = 0; i < m_PopulationSize; i++)
 		{
-			NeuralNetwork n = new NeuralNetwork(i_Inputs, i_Hiddens, i_Outputs);
+			NeuralNetwork n = new NeuralNetwork(i_Inputs, i_Outputs);
 			pop.Add(n);
 		}
 	}
@@ -44,12 +42,6 @@ public class Population
 	public int Size()
 	{
 		return pop.Count;
-	}
-
-	public void ApplyGeneticOperators()
-	{
-		CrossOver();
-		Mutate();
 	}
 
 	public void Mutate()
@@ -61,13 +53,22 @@ public class Population
 		}
 	}
 
-	public void CrossOver()
+	public void ApplyGeneticOperators()
+	{
+		Select();
+		Mutate();
+	}
+
+	public void Select()
 	{
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 		for(int i = 0; i < m_PopulationSize; i++)
 		{
+			Console.WriteLine("Initiated tournement");
 			newGeneration.Add(ThreeWayTournement());
 		}
+
+		pop = newGeneration;
 	}
 
 	private NeuralNetwork TwoWayTournement()

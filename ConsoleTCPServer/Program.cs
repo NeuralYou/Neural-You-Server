@@ -1,12 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.WebSockets;
-using Newtonsoft.Json;
-using System.Text;
-using System.Collections.Generic;
-
-namespace ConsoleTCPServer
+﻿namespace ConsoleTCPServer
 {
 	class Program
 	{
