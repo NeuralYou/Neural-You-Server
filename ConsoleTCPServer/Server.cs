@@ -28,19 +28,27 @@ namespace ConsoleTCPServer
 				TcpClient client = listener.AcceptTcpClient();
 				NetworkStream stream = client.GetStream();
 				
-				Population population = processInput(stream);
+				Population population = ParsePopulation(stream);
 				Console.WriteLine($"Recived {population.Size()} networks");
 				Console.WriteLine($"Processed population");
 
 				StorePopulation(population);
 				Console.WriteLine("Stored population in " + path);
 
+				ApplyGeneticOperators(population);
+
 				sendResponse(population, stream);
 				Console.WriteLine("Sent Response\n\n");
 			}
 		}
 
-		private Population processInput(NetworkStream stream)
+		private Population ApplyGeneticOperators(Population population)
+		{
+			population.ApplyGeneticOperators();
+			return population;
+		}
+
+		private Population ParsePopulation(NetworkStream stream)
 		{
 			//try
 			{
