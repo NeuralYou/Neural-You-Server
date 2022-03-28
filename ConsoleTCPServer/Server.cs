@@ -25,7 +25,7 @@ namespace ConsoleTCPServer
 				Population pop = processPopulation(mutationRate, networks);
 				Console.WriteLine($"Processed population");
 				sendResponse(pop, stream);
-				Console.WriteLine("Sent Response");
+				Console.WriteLine("Sent Response\n\n");
 			}
 		}
 

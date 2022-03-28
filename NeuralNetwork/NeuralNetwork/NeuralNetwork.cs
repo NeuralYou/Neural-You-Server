@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 
 [System.Serializable]
-public class NeuralNetwork : System.IEquatable<NeuralNetwork>
+public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparable<NeuralNetwork>
 {
 	[JsonProperty] InputNeuron[] inputs;
 	[JsonProperty] HiddenNeuron[] hidden;
@@ -127,5 +127,10 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>
 		}
 
 		return res;
+	}
+
+	public int CompareTo(NeuralNetwork other)
+	{
+		return (int) (Fitness - other.Fitness);
 	}
 }
