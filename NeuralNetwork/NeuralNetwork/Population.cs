@@ -51,7 +51,6 @@ public class Population
 		int elitistsAmount = Elitists(newGeneration);
 		Select(newGeneration);
 		Mutate(elitistsAmount);
-		GenerateMetaData();
 		ResetFitness();
 	}
 	private int Elitists(List<NeuralNetwork> newGeneration)
@@ -88,47 +87,19 @@ public class Population
 		}
 	}
 
-	public void GenerateMetaData()
-	{
-		float highestFitness = GetFittest().Fitness;
-		float averageFitness = 0;
-
-		string path = @"C:\Users\Guy\Documents\NeuralYou Data\28.3.2022\";
-		string metaFileName = "Population data.txt";
-		string date = DateTime.Today.ToString();
-	
-		foreach (NeuralNetwork n in pop)
-		{
-			averageFitness += n.Fitness;
-		}
-
-		averageFitness /= pop.Count;
-		StreamWriter write = new StreamWriter(path + metaFileName);
-		write.Write("Date: " + date + "\n");
-		write.Write("Elements in generation: " + pop.Count + "\n");
-		write.Write("Highest Fitness: " + highestFitness + "\n");
-		write.Write("Average Fitness: " + averageFitness + "\n");
-		write.Close();
-	}
-
 	public string[] SerializeAll()
-	{
-		int num = 1;
-		string path = @"C:\Users\Guy\Documents\NeuralYou Data\28.3.2022\";
+	{ 
 		List<string> list = new List<string>();
 
 		foreach(NeuralNetwork n in pop)
 		{
 			string json = JsonConvert.SerializeObject(n, Formatting.Indented);
 			list.Add(json);
-			string fileName = "network " + (num++) + ".json";
-			StreamWriter write = new StreamWriter(path + fileName);
-			write.Write(json);
-			write.Close();
 		}
 
 		return list.ToArray();
 	}
+
 	private NeuralNetwork TwoWayTournement()
 	{
 		NeuralNetwork p1 = pop[Utils.RandomRange(0, pop.Count)];
