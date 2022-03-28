@@ -44,7 +44,6 @@ public class Population
 		return pop.Count;
 	}
 
-
 	public void ApplyGeneticOperators()
 	{
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
@@ -74,9 +73,18 @@ public class Population
 
 	public void Mutate(int elitistsAmount)
 	{
+		Random rand = new Random();
+		for(int i = elitistsAmount; i < pop.Count; i++)
+		{
+			if (rand.NextDouble() < m_MutationRate)
+			{
+				pop[i].MutateNetwork(m_MutationRate);
+			}
+		}
+
 		for(int i = elitistsAmount; i < pop.Count; i++ )
 		{
-			pop[i].MutateNetwork(0.05f);
+			pop[i].MutateNetwork(m_MutationRate);
 		}
 	}
 	private void ResetFitness()

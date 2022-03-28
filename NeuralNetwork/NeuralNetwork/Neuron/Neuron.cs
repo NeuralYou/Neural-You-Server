@@ -33,14 +33,11 @@ public abstract class Neuron
 		}
 	}
 
-	public void Mutate(float i_MutationRate)
+	public void Mutate()
 	{
 		for (int i = 0; i < outputWeights.Length; i++)
 		{
-			if (Utils.RandomRange(0, 1f) <= i_MutationRate)
-			{
-				outputWeights[i] += Utils.RandomRange(-3f, 3f);
-			}
+			outputWeights[i] += Utils.RandomRange(-3f, 3f);
 		}
 	}
 }

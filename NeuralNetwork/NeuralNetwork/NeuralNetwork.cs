@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparable<NeuralNetwork>
@@ -83,15 +85,42 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 	
 	public void MutateNetwork(float i_MutationRate)
 	{
-		foreach(InputNeuron n in inputs)
+		System.Random rand = new System.Random();
+		int numberOfWeights = (int) (inputs.Length * hidden.Length * outputs.Length * 0.05f);
+		
+		List<Neuron> neurons = new List<Neuron>();
+		for(int i = 0; i < numberOfWeights/2; i++)
 		{
-			n.Mutate(i_MutationRate);
+			Neuron n = inputs[rand.Next(inputs.Length)];
+			if (!neurons.Contains(n))
+				neurons.Add(n);
 		}
 
-		foreach(HiddenNeuron n in hidden)
+		for(int i = 0; i < hidden.Length; i++)
 		{
-			n.Mutate(i_MutationRate);
+			Neuron n = hidden[rand.Next(hidden.Length)];
+			if (!neurons.Contains(n))
+				neurons.Add(n);
 		}
+
+		foreach(Neuron n in neurons)
+		{
+			n.Mutate();
+		}
+
+
+
+
+
+		//foreach (InputNeuron n in inputs)
+		//{
+		//	n.Mutate(i_MutationRate);
+		//}
+
+		//foreach(HiddenNeuron n in hidden)
+		//{
+		//	n.Mutate(i_MutationRate);
+		//}
 	}
 
 	public override bool Equals(object obj)
