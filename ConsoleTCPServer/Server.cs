@@ -15,6 +15,12 @@ namespace ConsoleTCPServer
 			path = GetPathToCurrentFolder();
 		}
 
+		private void initPopulation(NetworkStream stream)
+		{
+			Population pop = new Population(0.1f, 100, 5, 1);
+			sendInitialResponse(pop, stream);
+		}
+
 		public void Run()
 		{
 			IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
@@ -27,7 +33,15 @@ namespace ConsoleTCPServer
 				Console.WriteLine("Recieving..");
 				TcpClient client = listener.AcceptTcpClient();
 				NetworkStream stream = client.GetStream();
-				
+
+				RequestType type = (RequestType) Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
+
+				if(type.Equals(RequestType.INIT))
+				{
+					initPopulation(stream);
+					continue;
+				}
+
 				Population population = ParsePopulation(stream);
 				Console.WriteLine($"Recived {population.Size()} networks");
 				Console.WriteLine($"Processed population");
@@ -81,7 +95,7 @@ namespace ConsoleTCPServer
 
 			string[] stringReps = pop.SerializeAll();
 
-			foreach(NeuralNetwork p in pop.Pop)
+			foreach(NeuralNetwork p in pop.Elements)
 			{
 				NetworkUtils.WriteNN(stream, p);
 			}
@@ -131,7 +145,7 @@ namespace ConsoleTCPServer
 			string fileName = "Population data.txt";
 			string date = DateTime.Now.ToString();
 
-			foreach (NeuralNetwork n in pop.Pop)
+			foreach (NeuralNetwork n in pop.Elements)
 			{
 				averageFitness += n.Fitness;
 			}
@@ -164,6 +178,16 @@ namespace ConsoleTCPServer
 			string pathToCurrent = Directory.CreateDirectory(s + @"\" + amountOfFiles).FullName;
 
 			return pathToCurrent;
+		}
+
+		private void sendInitialResponse(Population pop, NetworkStream stream)
+		{
+			NetworkUtils.WriteInt(stream, pop.Size());
+			string[] stringReps = pop.SerializeAll();
+			foreach (NeuralNetwork p in pop.Elements)
+			{
+				NetworkUtils.WriteNN(stream, p);
+			}
 		}
 	}
 }

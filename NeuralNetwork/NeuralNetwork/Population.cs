@@ -9,9 +9,10 @@ public class Population
 	public float m_MutationRate;
 	int m_PopulationSize;
 
-	public List<NeuralNetwork> Pop
+	public List<NeuralNetwork> Elements
 	{
 		get { return pop; }
+		private set { pop = value; }
 	}
 
 	public Population(float i_MutationRate, int i_PopulationSize, int i_Inputs, int i_Outputs)
@@ -54,9 +55,9 @@ public class Population
 	}
 	private int Elitists(List<NeuralNetwork> newGeneration)
 	{
-		pop.Sort();
+		Elements.Sort();
 		int fivePrecent = (int) (pop.Count * 0.05f);
-		newGeneration.AddRange(pop.GetRange(pop.Count - fivePrecent, fivePrecent));
+		newGeneration.AddRange(Elements.GetRange(Elements.Count - fivePrecent, fivePrecent));
 		Console.WriteLine("Added " + fivePrecent);
 		return fivePrecent;
 	}
@@ -68,28 +69,28 @@ public class Population
 			newGeneration.Add(ThreeWayTournement());
 		}
 
-		pop = newGeneration;
+		Elements = newGeneration;
 	}
 
 	public void Mutate(int elitistsAmount)
 	{
 		Random rand = new Random();
-		for(int i = elitistsAmount; i < pop.Count; i++)
+		for(int i = elitistsAmount; i < Elements.Count; i++)
 		{
 			if (rand.NextDouble() < m_MutationRate)
 			{
-				pop[i].MutateNetwork(m_MutationRate);
+				Elements[i].MutateNetwork(m_MutationRate);
 			}
 		}
 
 		for(int i = elitistsAmount; i < pop.Count; i++ )
 		{
-			pop[i].MutateNetwork(m_MutationRate);
+			Elements[i].MutateNetwork(m_MutationRate);
 		}
 	}
 	private void ResetFitness()
 	{
-		foreach(NeuralNetwork n in Pop)
+		foreach(NeuralNetwork n in Elements)
 		{
 			n.Fitness = 0;
 		}
@@ -99,7 +100,7 @@ public class Population
 	{ 
 		List<string> list = new List<string>();
 
-		foreach(NeuralNetwork n in pop)
+		foreach(NeuralNetwork n in Elements)
 		{
 			string json = JsonConvert.SerializeObject(n, Formatting.Indented);
 			list.Add(json);
@@ -110,15 +111,15 @@ public class Population
 
 	private NeuralNetwork TwoWayTournement()
 	{
-		NeuralNetwork p1 = pop[Utils.RandomRange(0, pop.Count)];
-		NeuralNetwork p2 = pop[Utils.RandomRange(0, pop.Count)];
+		NeuralNetwork p1 = Elements[Utils.RandomRange(0, Elements.Count)];
+		NeuralNetwork p2 = Elements[Utils.RandomRange(0, Elements.Count)];
 		return Fitter(p1, p2);
 	}
 	private NeuralNetwork ThreeWayTournement()
 	{
-		NeuralNetwork p1 = pop[Utils.RandomRange(0, pop.Count)];
-		NeuralNetwork p2 = pop[Utils.RandomRange(0, pop.Count)];
-		NeuralNetwork p3 = pop[Utils.RandomRange(0, pop.Count)];
+		NeuralNetwork p1 = Elements[Utils.RandomRange(0, Elements.Count)];
+		NeuralNetwork p2 = Elements[Utils.RandomRange(0, Elements.Count)];
+		NeuralNetwork p3 = Elements[Utils.RandomRange(0, Elements.Count)];
 
 		return Fitter(Fitter(p1, p2), p3);
 	}
@@ -130,8 +131,8 @@ public class Population
 
 	public NeuralNetwork GetFittest()
 	{
-		NeuralNetwork max = pop[0];
-		foreach(NeuralNetwork p in pop)
+		NeuralNetwork max = Elements[0];
+		foreach(NeuralNetwork p in Elements)
 		{
 			if (p.Fitness > max.Fitness)
 			{
