@@ -33,7 +33,15 @@ namespace ConsoleTCPServer
 				Console.WriteLine("Recieving..");
 				TcpClient client = listener.AcceptTcpClient();
 				NetworkStream stream = client.GetStream();
-				
+
+				RequestType type = (RequestType) Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
+
+				if(type.Equals(RequestType.INIT))
+				{
+					initPopulation(stream);
+					continue;
+				}
+
 				Population population = ParsePopulation(stream);
 				Console.WriteLine($"Recived {population.Size()} networks");
 				Console.WriteLine($"Processed population");
