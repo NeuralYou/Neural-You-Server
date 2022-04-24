@@ -36,6 +36,7 @@ namespace ConsoleTCPServer
 
 				RequestType type = (RequestType) Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
 
+				Console.WriteLine($"Got Request: {type}");
 				if(type.Equals(RequestType.INIT))
 				{
 					initPopulation(stream);
@@ -68,7 +69,7 @@ namespace ConsoleTCPServer
 			{
 				List<NeuralNetwork> list = new List<NeuralNetwork>();
 
-				float mutationRate = NetworkUtils.ReadFloat(stream);
+				//float mutationRate = NetworkUtils.ReadFloat(stream);
 				int numberOfElements = NetworkUtils.ReadInt(stream);
 
 				for (int i = 0; i < numberOfElements; i++)
@@ -76,7 +77,7 @@ namespace ConsoleTCPServer
 					NeuralNetwork n = ProcessIndividual(stream);
 					list.Add(n);
 				}
-				return new Population(list.ToArray(), mutationRate);
+				return new Population(list.ToArray(), 0.01f);
 			}
 
 			//catch (Exception e)
@@ -90,7 +91,6 @@ namespace ConsoleTCPServer
 
 		private void sendResponse(Population pop, NetworkStream stream)
 		{
-			NetworkUtils.WriteFloat(stream, pop.m_MutationRate);
 			NetworkUtils.WriteInt(stream, pop.Size());
 
 			string[] stringReps = pop.SerializeAll();
