@@ -20,4 +20,9 @@
 	{
 		currentValue = 0;
 	}
+
+	public OutputNeuron Clone()
+	{
+		return new OutputNeuron();
+	}
 }

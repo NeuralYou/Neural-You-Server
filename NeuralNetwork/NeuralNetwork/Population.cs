@@ -69,7 +69,13 @@ public class Population
 			newGeneration.Add(ThreeWayTournement());
 		}
 
+
 		Elements = newGeneration;
+
+		for(int i = 0; i < Elements.Count; i++)
+		{
+			Elements[i] = Elements[i].Clone();
+		}
 	}
 
 	public void Mutate(int elitistsAmount)

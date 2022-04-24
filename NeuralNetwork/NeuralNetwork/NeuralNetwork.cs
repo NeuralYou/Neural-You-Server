@@ -35,7 +35,10 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 			hidden[i] = new HiddenNeuron(outputs.Length);
 		}
 
-
+		for(int i = 0; i < outputs.Length; i++)
+		{
+			outputs[i] = new OutputNeuron();
+		}
 	}
 
 	public void  FeedForward(float[] i_Inputs)
@@ -107,20 +110,6 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 		{
 			n.Mutate();
 		}
-
-
-
-
-
-		//foreach (InputNeuron n in inputs)
-		//{
-		//	n.Mutate(i_MutationRate);
-		//}
-
-		//foreach(HiddenNeuron n in hidden)
-		//{
-		//	n.Mutate(i_MutationRate);
-		//}
 	}
 
 	public override bool Equals(object obj)
@@ -161,5 +150,27 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 	public int CompareTo(NeuralNetwork other)
 	{
 		return (int) (Fitness - other.Fitness);
+	}
+
+	public NeuralNetwork Clone()
+	{
+		NeuralNetwork n = new NeuralNetwork(inputs.Length, outputs.Length);
+
+		for(int i = 0; i < n.inputs.Length; i++)
+		{
+			n.inputs[i] = inputs[i].Clone();
+		}
+
+		for(int i = 0; i < n.hidden.Length; i++)
+		{
+			n.hidden[i] = hidden[i].Clone();
+		}
+
+		for(int i = 0; i < n.outputs.Length; i++)
+		{
+			n.outputs[i] = new OutputNeuron(); // outputs[i].Clone();
+		}
+
+		return n;
 	}
 }
