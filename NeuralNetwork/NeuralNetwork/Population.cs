@@ -88,11 +88,6 @@ public class Population
 				Elements[i].MutateNetwork(m_MutationRate);
 			}
 		}
-
-		for(int i = elitistsAmount; i < pop.Count; i++ )
-		{
-			Elements[i].MutateNetwork(m_MutationRate);
-		}
 	}
 	private void ResetFitness()
 	{
