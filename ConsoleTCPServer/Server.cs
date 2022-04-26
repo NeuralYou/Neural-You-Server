@@ -10,14 +10,16 @@ namespace ConsoleTCPServer
 	class Server
 	{
 		string path;
+		float mutationRate;
 		public Server()
 		{
+			mutationRate = 0.1f;
 			path = GetPathToCurrentFolder();
 		}
 
 		private void initPopulation(NetworkStream stream)
 		{
-			Population pop = new Population(0.1f, 100, 5, 1);
+			Population pop = new Population(mutationRate, 100, 5, 1);
 			sendInitialResponse(pop, stream);
 		}
 
@@ -65,8 +67,6 @@ namespace ConsoleTCPServer
 
 		private Population ParsePopulation(NetworkStream stream)
 		{
-			//try
-			{
 				List<NeuralNetwork> list = new List<NeuralNetwork>();
 
 				//float mutationRate = NetworkUtils.ReadFloat(stream);
@@ -77,15 +77,7 @@ namespace ConsoleTCPServer
 					NeuralNetwork n = ProcessIndividual(stream);
 					list.Add(n);
 				}
-				return new Population(list.ToArray(), 0.01f);
-			}
-
-			//catch (Exception e)
-			//{
-			//	Console.WriteLine(e);
-			//	mutationRate = 0;
-			//	return null;
-			//}
+				return new Population(list.ToArray(), mutationRate);
 		}
 
 
@@ -101,14 +93,6 @@ namespace ConsoleTCPServer
 			}
 
 			stream.Close();
-		}
-
-		private Population processPopulation(float mutationRate, NeuralNetwork[] networks)
-		{
-			Population pop = new Population(networks, mutationRate);
-			pop.ApplyGeneticOperators();
-			Console.WriteLine("Applied genetic operators");
-			return pop;
 		}
 
 		public NeuralNetwork ProcessIndividual(NetworkStream stream)
