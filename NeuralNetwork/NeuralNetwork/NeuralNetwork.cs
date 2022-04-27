@@ -32,12 +32,28 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 
 		set
 		{
-			if (value.Length != Genome.Length)
+			List<float> genome = new List<float>(Genome);
+			if (value.Length != genome.Count)
 				throw new ArgumentException();
 
-			Genome = value;
-		}
+			foreach(InputNeuron input in inputs)
+			{
+				for(int i = 0; i < input.outputWeights.Length; i++)
+				{
+					input.outputWeights[i] = genome[0];
+					genome.RemoveAt(0);
+				}
+			}
 
+			foreach(HiddenNeuron hid in hidden)
+			{
+				for(int i = 0; i < hid.outputWeights.Length; i++)
+				{
+					hid.outputWeights[i] = genome[0];
+					genome.RemoveAt(0);
+				}
+			}
+		}
 	}
 
 	
