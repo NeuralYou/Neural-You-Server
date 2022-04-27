@@ -4,7 +4,7 @@ using System;
 public abstract class Neuron
 {
 	protected float currentValue;
-	[JsonProperty] protected float[] outputWeights;
+	[JsonProperty] internal float[] outputWeights;
 	protected bool active;
 
 	public virtual void RecieveInput(float i_InputVal)
