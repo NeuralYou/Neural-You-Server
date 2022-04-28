@@ -28,4 +28,3 @@ class Utils
 		return array[RandomRange(0, array.Count)];
 	}
 }
-}

@@ -50,6 +50,7 @@ public class Population
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 		int elitistsAmount = Elitists(newGeneration);
 		Select(newGeneration);
+		Crossover(elitistsAmount);
 		Mutate(elitistsAmount);
 		ResetFitness();
 	}
@@ -75,6 +76,31 @@ public class Population
 		for(int i = 0; i < Elements.Count; i++)
 		{
 			Elements[i] = Elements[i].Clone();
+		}
+	}
+
+	//Crossover type is 1-point crossover
+	public void Crossover(int elitistAmount)
+	{
+		for(int i = elitistAmount; i < Elements.Count; i++)
+		{
+			if(Utils.RollOdds(0.7f))
+			{
+				NeuralNetwork other = Utils.RandomElement(Elements);
+
+				float[] genome1 = Elements[i].Genome;
+				float[] genome2 = other.Genome;
+
+				int middle = genome1.Length / 2;
+				List<float> newGenome1 = new List<float>(genome1[0..middle]);
+				newGenome1.AddRange(genome2[middle..]);
+
+				List<float> newGenome2 = new List<float>(genome2[0..middle]);
+				newGenome2.AddRange(genome1[middle..]);
+
+				Elements[i].Genome = newGenome1.ToArray();
+				other.Genome = newGenome2.ToArray();
+			}
 		}
 	}
 

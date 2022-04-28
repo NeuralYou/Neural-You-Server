@@ -11,7 +11,7 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 	[JsonProperty] OutputNeuron[] outputs;
 	float networkThershold;
 	public float Fitness { get; set; }
-	public float[] Genome
+	[JsonIgnore] public float[] Genome
 	{
 		get
 		{
@@ -34,7 +34,11 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 		{
 			List<float> genome = new List<float>(Genome);
 			if (value.Length != genome.Count)
+			{
+				Console.WriteLine("*************************************");
+				Console.WriteLine($"Expected length: {genome.Count}\t recieved count: {value.Length}");
 				throw new ArgumentException();
+			}
 
 			foreach(InputNeuron input in inputs)
 			{
