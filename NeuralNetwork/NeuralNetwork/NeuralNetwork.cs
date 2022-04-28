@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,54 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 	[JsonProperty] OutputNeuron[] outputs;
 	float networkThershold;
 	public float Fitness { get; set; }
+	[JsonIgnore] public float[] Genome
+	{
+		get
+		{
+			List<float> genome = new List<float>();
+			
+			foreach(InputNeuron input in inputs)
+			{
+				genome.AddRange(input.outputWeights);
+			}
+
+			foreach(HiddenNeuron hid in hidden)
+			{
+				genome.AddRange(hid.outputWeights);
+			}
+
+			return genome.ToArray();
+		}
+
+		set
+		{
+			List<float> genome = new List<float>(Genome);
+			if (value.Length != genome.Count)
+			{
+				Console.WriteLine("*************************************");
+				Console.WriteLine($"Expected length: {genome.Count}\t recieved count: {value.Length}");
+				throw new ArgumentException();
+			}
+
+			foreach(InputNeuron input in inputs)
+			{
+				for(int i = 0; i < input.outputWeights.Length; i++)
+				{
+					input.outputWeights[i] = genome[0];
+					genome.RemoveAt(0);
+				}
+			}
+
+			foreach(HiddenNeuron hid in hidden)
+			{
+				for(int i = 0; i < hid.outputWeights.Length; i++)
+				{
+					hid.outputWeights[i] = genome[0];
+					genome.RemoveAt(0);
+				}
+			}
+		}
+	}
 
 	
 	public NeuralNetwork(int i_NumberOfInputs, int i_NumberOfOutputs)

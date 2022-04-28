@@ -13,8 +13,8 @@ namespace ConsoleTCPServer
 		float mutationRate;
 		public Server()
 		{
-			mutationRate = 0.1f;
-			path = GetPathToCurrentFolder();
+			mutationRate = 0.2f;
+			//path = GetPathToCurrentFolder();
 		}
 
 		private void initPopulation(NetworkStream stream)
@@ -25,37 +25,44 @@ namespace ConsoleTCPServer
 
 		public void Run()
 		{
-			IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+			IPAddress ipAddress = IPAddress.Parse("0.0.0.0");
 			TcpListener listener = new TcpListener(ipAddress, 1234);
 			listener.Start();
 			bool done = false;
 			
 			while (!done)
 			{
-				Console.WriteLine("Recieving..");
-				TcpClient client = listener.AcceptTcpClient();
-				NetworkStream stream = client.GetStream();
-
-				RequestType type = (RequestType) Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
-
-				Console.WriteLine($"Got Request: {type}");
-				if(type.Equals(RequestType.INIT))
+				try
 				{
-					initPopulation(stream);
-					continue;
+					Console.WriteLine("Recieving..");
+					TcpClient client = listener.AcceptTcpClient();
+					NetworkStream stream = client.GetStream();
+
+					RequestType type = (RequestType)Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
+
+					Console.WriteLine($"Got Request: {type}");
+					if (type.Equals(RequestType.INIT))
+					{
+						initPopulation(stream);
+						continue;
+					}
+
+					Population population = ParsePopulation(stream);
+					Console.WriteLine($"Recived {population.Size()} networks");
+					Console.WriteLine($"Processed population");
+
+					StorePopulation(population);
+					Console.WriteLine("Stored population in " + path);
+
+					ApplyGeneticOperators(population);
+
+					sendResponse(population, stream);
+					Console.WriteLine("Sent Response\n\n");
 				}
-
-				Population population = ParsePopulation(stream);
-				Console.WriteLine($"Recived {population.Size()} networks");
-				Console.WriteLine($"Processed population");
-
-				StorePopulation(population);
-				Console.WriteLine("Stored population in " + path);
-
-				ApplyGeneticOperators(population);
-
-				sendResponse(population, stream);
-				Console.WriteLine("Sent Response\n\n");
+				catch(Exception)
+				{
+					Console.WriteLine("Exception caught. better be more careful!");
+				}
 			}
 		}
 
