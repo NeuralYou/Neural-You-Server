@@ -1,15 +1,15 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 [System.Serializable]
-public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparable<NeuralNetwork>
+public class NeuralNetwork : System.IComparable<NeuralNetwork>
 {
 	[JsonProperty] InputNeuron[] inputs;
 	[JsonProperty] HiddenNeuron[] hidden;
 	[JsonProperty] OutputNeuron[] outputs;
 	float networkThershold;
+
 	public float Fitness { get; set; }
 	[JsonIgnore] public float[] Genome
 	{
@@ -159,41 +159,6 @@ public class NeuralNetwork : System.IEquatable<NeuralNetwork>, System.IComparabl
 		{
 			n.Mutate();
 		}
-	}
-
-	public override bool Equals(object obj)
-	{
-		return Equals(obj as NeuralNetwork);
-	}
-
-	public bool Equals(NeuralNetwork other)
-	{
-		bool res = true;
-
-		if(other == null)
-		{
-			return false;
-		}
-
-		if (!GetType().Equals(other.GetType()))
-		{
-			res = false;
-		}
-
-		for (int i = 0; i < inputs.Length; i++)
-		{
-			if (!inputs[i].Equals(other.inputs[i]))
-			{
-				res = false;
-			}
-
-			if (!hidden[i].Equals(other.hidden[i]))
-			{
-				res = false;
-			}
-		}
-
-		return res;
 	}
 
 	public int CompareTo(NeuralNetwork other)
