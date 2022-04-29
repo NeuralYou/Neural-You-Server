@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-class Utils
+class RandomUtils
 {
 	public static System.Random rand = new System.Random();
 	public static float RandomRange(float min, float max)

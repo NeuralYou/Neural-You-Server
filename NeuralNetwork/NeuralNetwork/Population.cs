@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 public class Population
 {
@@ -70,7 +69,6 @@ public class Population
 			newGeneration.Add(ThreeWayTournement());
 		}
 
-
 		Elements = newGeneration;
 
 		for(int i = 0; i < Elements.Count; i++)
@@ -84,9 +82,9 @@ public class Population
 	{
 		for(int i = elitistAmount; i < Elements.Count; i++)
 		{
-			if(Utils.RollOdds(0.7f))
+			if(RandomUtils.RollOdds(0.7f))
 			{
-				NeuralNetwork other = Utils.RandomElement(Elements);
+				NeuralNetwork other = RandomUtils.RandomElement(Elements);
 
 				float[] genome1 = Elements[i].Genome;
 				float[] genome2 = other.Genome;
@@ -123,7 +121,7 @@ public class Population
 		}
 	}
 
-	public string[] SerializeAll()
+	public string[] SerializeNetworks()
 	{ 
 		List<string> list = new List<string>();
 
@@ -136,37 +134,24 @@ public class Population
 		return list.ToArray();
 	}
 
-	private NeuralNetwork TwoWayTournement()
-	{
-		NeuralNetwork p1 = Elements[Utils.RandomRange(0, Elements.Count)];
-		NeuralNetwork p2 = Elements[Utils.RandomRange(0, Elements.Count)];
-		return Fitter(p1, p2);
-	}
 	private NeuralNetwork ThreeWayTournement()
 	{
-		NeuralNetwork p1 = Elements[Utils.RandomRange(0, Elements.Count)];
-		NeuralNetwork p2 = Elements[Utils.RandomRange(0, Elements.Count)];
-		NeuralNetwork p3 = Elements[Utils.RandomRange(0, Elements.Count)];
+		NeuralNetwork p1 = RandomUtils.RandomElement(Elements);
+		NeuralNetwork p2 = RandomUtils.RandomElement(Elements);
+		NeuralNetwork p3 = RandomUtils.RandomElement(Elements);
 
 		return Fitter(Fitter(p1, p2), p3);
 	}
 
-	private NeuralNetwork Fitter(NeuralNetwork i_NeuralNetwork1, NeuralNetwork i_NeuralNetwork2)
+	private NeuralNetwork Fitter(NeuralNetwork network1, NeuralNetwork network2)
 	{
-		return (i_NeuralNetwork1.Fitness > i_NeuralNetwork2.Fitness ? i_NeuralNetwork1 : i_NeuralNetwork2);
+		return (network1.CompareTo(network2) > 0 ? network1 : network2);
 	}
 
 	public NeuralNetwork GetFittest()
 	{
-		NeuralNetwork max = Elements[0];
-		foreach(NeuralNetwork p in Elements)
-		{
-			if (p.Fitness > max.Fitness)
-			{
-				max = p;
-			}
-		}
-
-		return max;
+		List<NeuralNetwork> sorted = new List<NeuralNetwork>(Elements);
+		sorted.Sort();
+		return sorted[^0];
 	}
 }

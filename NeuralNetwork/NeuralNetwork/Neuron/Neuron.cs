@@ -37,7 +37,7 @@ public abstract class Neuron
 	{
 		for (int i = 0; i < outputWeights.Length; i++)
 		{
-			outputWeights[i] += Utils.RandomRange(-3f, 3f);
+			outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
 		}
 	}
 }

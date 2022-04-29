@@ -14,7 +14,7 @@ public class HiddenNeuron: Neuron
 
 		for(int i = 0; i < outputWeights.Length; i++)
 		{
-			outputWeights[i] = Utils.RandomRange(-1f, 1f);
+			outputWeights[i] = RandomUtils.RandomRange(-1f, 1f);
 		}
 
 	}
