@@ -118,7 +118,6 @@ public class Population
 	public void Mutate(int elitistsAmount)
 	{
 		Random rand = new Random();
-
 		float average = AverageFitness;
 
 		for(int i = elitistsAmount; i < Elements.Count; i++)
@@ -126,10 +125,7 @@ public class Population
 			if (rand.NextDouble() < m_MutationRate)
 			{
 				bool aboveAverage = Elements[i].Fitness >= average;
-				if(Elements[i].Fitness >= average)
-				{
-					Elements[i].MutateNetwork(m_MutationRate, aboveAverage);
-				}
+				Elements[i].MutateNetwork(aboveAverage);
 			}
 		}
 	}
