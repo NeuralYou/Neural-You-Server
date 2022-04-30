@@ -33,18 +33,19 @@ public abstract class Neuron
 		}
 	}
 
-	public void BiasedMutate()
+	public void Mutate(bool biasedMutation)
 	{
 		for (int i = 0; i < outputWeights.Length; i++)
 		{
-			outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+			float value = RandomUtils.RandomRange(-3f, 3f);
+			outputWeights[i] = biasedMutation ? outputWeights[i] + value : value;
 		}
 	}
-	public void UnbiasedMutate()
-	{
-		for (int i = 0; i < outputWeights.Length; i++)
-		{
-			outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
-		}
-	}
+	//public void UnbiasedMutate()
+	//{
+	//	for (int i = 0; i < outputWeights.Length; i++)
+	//	{
+	//		outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+	//	}
+	//}
 }

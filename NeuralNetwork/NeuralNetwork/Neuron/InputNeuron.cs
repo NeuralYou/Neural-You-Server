@@ -1,4 +1,6 @@
-﻿public class InputNeuron : Neuron
+﻿using System;
+
+public class InputNeuron : Neuron
 {
 
 	public InputNeuron(int i_SizeOfNextLayer)
@@ -21,5 +23,11 @@
 		}
 
 		return n;
+	}
+
+	internal void MutateWeight(int index, bool biasedMutation)
+	{
+		float value = RandomUtils.RandomRange(-3f, 3f);
+		outputWeights[index] = biasedMutation ? outputWeights[index] + value : value;
 	}
 }
