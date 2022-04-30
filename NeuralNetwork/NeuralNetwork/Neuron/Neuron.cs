@@ -33,7 +33,14 @@ public abstract class Neuron
 		}
 	}
 
-	public void Mutate()
+	public void BiasedMutate()
+	{
+		for (int i = 0; i < outputWeights.Length; i++)
+		{
+			outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+		}
+	}
+	public void UnbiasedMutate()
 	{
 		for (int i = 0; i < outputWeights.Length; i++)
 		{
