@@ -135,30 +135,38 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		}
 	}
 	
-	public void MutateNetwork(float i_MutationRate)
+	public void MutateNetwork(float i_MutationRate, bool biasedMutation)
 	{
-		System.Random rand = new System.Random();
-		int numberOfWeights = (int) (inputs.Length * hidden.Length * outputs.Length * 0.05f);
-		
+		List<Neuron> neurons = ChooseRandomNodesForMutation();
+
+		foreach (Neuron n in neurons)
+		{
+			if(biasedMutation) { n.BiasedMutate(); }
+			else { n.UnbiasedMutate(); }
+		}
+	}
+
+	private List<Neuron> ChooseRandomNodesForMutation()
+	{
+		Random rand = new Random();
+		int numberOfWeights = (int)(inputs.Length * hidden.Length * outputs.Length * 0.05f);
+
 		List<Neuron> neurons = new List<Neuron>();
-		for(int i = 0; i < numberOfWeights/2; i++)
+		for (int i = 0; i < numberOfWeights / 2; i++)
 		{
 			Neuron n = inputs[rand.Next(inputs.Length)];
 			if (!neurons.Contains(n))
 				neurons.Add(n);
 		}
 
-		for(int i = 0; i < hidden.Length; i++)
+		for (int i = 0; i < hidden.Length; i++)
 		{
 			Neuron n = hidden[rand.Next(hidden.Length)];
 			if (!neurons.Contains(n))
 				neurons.Add(n);
 		}
 
-		foreach(Neuron n in neurons)
-		{
-			n.Mutate();
-		}
+		return neurons;
 	}
 
 	public int CompareTo(NeuralNetwork other)

@@ -4,9 +4,22 @@ using System.Collections.Generic;
 
 public class Population
 {
-	List<NeuralNetwork> pop;
+	private List<NeuralNetwork> pop;
 	public float m_MutationRate;
 	int m_PopulationSize;
+	public float AverageFitness
+	{
+		get
+		{
+			float sum = 0;
+			foreach(NeuralNetwork n in Elements)
+			{
+				sum += n.Fitness;
+			}
+
+			return sum / Elements.Count;
+		}
+	}
 
 	public List<NeuralNetwork> Elements
 	{
@@ -105,11 +118,18 @@ public class Population
 	public void Mutate(int elitistsAmount)
 	{
 		Random rand = new Random();
+
+		float average = AverageFitness;
+
 		for(int i = elitistsAmount; i < Elements.Count; i++)
 		{
 			if (rand.NextDouble() < m_MutationRate)
 			{
-				Elements[i].MutateNetwork(m_MutationRate);
+				bool aboveAverage = Elements[i].Fitness >= average;
+				if(Elements[i].Fitness >= average)
+				{
+					Elements[i].MutateNetwork(m_MutationRate, aboveAverage);
+				}
 			}
 		}
 	}
