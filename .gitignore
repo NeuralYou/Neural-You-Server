@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+*network*.json
+*Population data.txt
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
