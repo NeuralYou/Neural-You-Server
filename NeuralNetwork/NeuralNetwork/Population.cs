@@ -162,7 +162,7 @@ public class Population
 
 		foreach(NeuralNetwork n in Elements)
 		{
-			string json = JsonConvert.SerializeObject(n, Formatting.Indented);
+			string json = JsonConvert.SerializeObject(n);
 			list.Add(json);
 		}
 
