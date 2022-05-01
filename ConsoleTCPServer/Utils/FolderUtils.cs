@@ -9,7 +9,7 @@ public static class FolderUtils
 {
 	public static void StorePopulation(Population population, string path)
 	{
-		GenerateMetaData(population, path);
+		//GenerateMetaData(population, path);
 
 		string[] elements = population.SerializeNetworks();
 		int num = 1;
