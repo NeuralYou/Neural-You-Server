@@ -1,5 +1,6 @@
-using Newtonsoft.Json;
 using System;
+using System.Linq;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 public class Population
@@ -77,9 +78,22 @@ public class Population
 
 	public void Select(List<NeuralNetwork> newGeneration)
 	{
+		int cloneLimit = 3;
+		List<int> cloneCounters = new int[Elements.Count].ToList();
+		List<NeuralNetwork> tempPop = new List<NeuralNetwork>(Elements);
+		
 		for(int i = newGeneration.Count; i < m_PopulationSize; i++)
 		{
-			newGeneration.Add(ThreeWayTournement());
+			NeuralNetwork winner = ThreeWayTournement(tempPop);
+			int winnerIndex = tempPop.FindIndex((NeuralNetwork other) => winner.Equals(other));
+			cloneCounters[winnerIndex]++;
+			newGeneration.Add(tempPop[winnerIndex]);
+
+			if (cloneCounters[winnerIndex] >= cloneLimit)
+			{
+				tempPop.RemoveAt(winnerIndex);
+				cloneCounters.RemoveAt(winnerIndex);
+			}
 		}
 
 		Elements = newGeneration;
@@ -88,6 +102,11 @@ public class Population
 		{
 			Elements[i] = Elements[i].Clone();
 		}
+
+		//for(int i = newGeneration.Count; i < m_PopulationSize; i++)
+		//{
+		//	newGeneration.Add(ThreeWayTournement());
+		//}
 	}
 
 	//Crossover type is 1-point crossover
@@ -95,9 +114,9 @@ public class Population
 	{
 		for(int i = elitistAmount; i < Elements.Count; i++)
 		{
-			if(RandomUtils.RollOdds(0.7f))
+			if(RandomUtils.RollOdds(0.4f))
 			{
-				NeuralNetwork other = RandomUtils.RandomElement(Elements);
+				NeuralNetwork other = Elements[RandomUtils.RandomRange(elitistAmount, Elements.Count)];
 
 				float[] genome1 = Elements[i].Genome;
 				float[] genome2 = other.Genome;
@@ -122,7 +141,7 @@ public class Population
 
 		for(int i = elitistsAmount; i < Elements.Count; i++)
 		{
-			if (rand.NextDouble() < m_MutationRate)
+			if (RandomUtils.RollOdds(m_MutationRate))
 			{
 				bool aboveAverage = Elements[i].Fitness >= average;
 				Elements[i].MutateNetwork(aboveAverage);
@@ -158,6 +177,15 @@ public class Population
 
 		return Fitter(Fitter(p1, p2), p3);
 	}
+	
+	private NeuralNetwork ThreeWayTournement(List<NeuralNetwork> elements)
+	{
+		NeuralNetwork p1 = RandomUtils.RandomElement(elements);
+		NeuralNetwork p2 = RandomUtils.RandomElement(elements);
+		NeuralNetwork p3 = RandomUtils.RandomElement(elements);
+
+		return Fitter(Fitter(p1, p2), p3);
+	}
 
 	private NeuralNetwork Fitter(NeuralNetwork network1, NeuralNetwork network2)
 	{
@@ -168,6 +196,6 @@ public class Population
 	{
 		List<NeuralNetwork> sorted = new List<NeuralNetwork>(Elements);
 		sorted.Sort();
-		return sorted[^0];
+		return sorted.Last();
 	}
 }
