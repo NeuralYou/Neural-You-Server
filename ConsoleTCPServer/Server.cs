@@ -11,10 +11,14 @@ namespace ConsoleTCPServer
 	class Server
 	{
 		float mutationRate;
+		string path;
 
 		public Server()
 		{
-			mutationRate = 0.2f;
+			mutationRate = 0.05f;
+			path = FolderUtils.GetPathToCurrentFolder();
+			Console.WriteLine(path);
+
 		}
 
 		private void initPopulation(NetworkStream stream)
@@ -51,13 +55,17 @@ namespace ConsoleTCPServer
 					Console.WriteLine($"Recived {population.Size()} networks");
 					Console.WriteLine($"Processed population");
 
+					FolderUtils.StorePopulation(population, path);
+
 					ApplyGeneticOperators(population);
 
 					sendResponse(population, stream);
 					Console.WriteLine("Sent Response\n\n");
 				}
-				catch(Exception)
+				catch(Exception e)
 				{
+					Console.WriteLine(e.Message);
+					Console.WriteLine(e.StackTrace);
 					Console.WriteLine("Exception caught. better be more careful!");
 				}
 			}

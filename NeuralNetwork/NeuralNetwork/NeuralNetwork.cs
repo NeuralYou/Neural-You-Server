@@ -8,7 +8,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 	[JsonProperty] InputNeuron[] inputs;
 	[JsonProperty] HiddenNeuron[] hidden;
 	[JsonProperty] OutputNeuron[] outputs;
-	float networkThershold;
+	float networkThreshold;
 
 	public float Fitness { get; set; }
 	[JsonIgnore] public float[] Genome
@@ -63,6 +63,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 	
 	public NeuralNetwork(int i_NumberOfInputs, int i_NumberOfOutputs)
 	{
+		networkThreshold = 0.3f;
 		inputs = new InputNeuron[i_NumberOfInputs];
 		outputs = new OutputNeuron[i_NumberOfOutputs];
 
@@ -116,7 +117,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 
 		foreach(HiddenNeuron hid in hidden)
 		{
-			hid.Activate(networkThershold);
+			hid.Activate(networkThreshold);
 		}
 	}
 
@@ -130,7 +131,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 
 		foreach(OutputNeuron output in outputs)
 		{
-			output.Activate(networkThershold);
+			output.Activate(networkThreshold);
 			output.Reset();
 		}
 	}
@@ -206,5 +207,29 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		}
 
 		return n;
+	}
+
+	public bool Equals(NeuralNetwork other)
+	{
+		for(int i = 0; i < inputs.Length; i++)
+		{
+			for(int j = 0; j < inputs[i].outputWeights.Length; j++)
+			{
+				if (inputs[i].outputWeights[j] != other.inputs[i].outputWeights[j])
+				{
+					return false;
+				}
+			}
+
+			for(int j = 0; j < hidden[i].outputWeights.Length; j++)
+			{
+				if(hidden[i].outputWeights[j] != other.hidden[i].outputWeights[j])
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

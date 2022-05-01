@@ -15,7 +15,8 @@ public abstract class Neuron
 	public virtual void Activate(float i_Threshold)
 	{
 		currentValue = (float)Math.Tanh(currentValue);
-		
+
+		active = currentValue > i_Threshold;
 		if(currentValue > i_Threshold) { active = true; }
 		else { active = false; }
 	}
