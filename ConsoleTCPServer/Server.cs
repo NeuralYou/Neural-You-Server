@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Threading;
 
 namespace ConsoleTCPServer
 {
@@ -84,6 +84,7 @@ namespace ConsoleTCPServer
 
 				for (int i = 0; i < numberOfElements; i++)
 				{
+					Thread.Sleep(1);
 					NeuralNetwork n = ProcessIndividual(stream);
 					list.Add(n);
 				}
