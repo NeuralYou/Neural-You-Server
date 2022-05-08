@@ -58,18 +58,21 @@ public class Population
 		return pop.Count;
 	}
 
-	public void ApplyGeneticOperators()
+	public List<NeuralNetwork> ApplyGeneticOperators()
 	{
 		//List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 		List<NeuralNetwork> elitists = Elitists(Elements);
 		//************************************************//
 
 		List<NeuralNetwork> newPopulation = Select(Elements);
-
 		newPopulation = Crossover(newPopulation);
+		newPopulation = Mutate(newPopulation);
 
+		newPopulation = ResetFitness(newPopulation);
 
+		newPopulation.AddRange(elitists);
 
+		return newPopulation;
 
 
 
@@ -88,7 +91,14 @@ public class Population
 		temp.Sort();
 
 		List<NeuralNetwork> elitists = temp.GetRange(temp.Count - tenPercent, tenPercent);
-		return (List<NeuralNetwork>) elitists.Select(net => net.Clone());
+
+		for(int i = 0; i < elitists.Count; i++)
+		{
+			elitists[i] = elitists[i].Clone();
+		}
+
+		return elitists;
+		//return (List<NeuralNetwork>) elitists.Select(net => net.Clone());
 	}
 
 	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration)
@@ -141,15 +151,15 @@ public class Population
 	}
 
 	//Crossover type is 1-point crossover
-	public void Crossover(int elitistAmount)
+	public List<NeuralNetwork> Crossover(List<NeuralNetwork> newGeneration)
 	{
-		for(int i = elitistAmount; i < Elements.Count; i++)
+		for(int i = 0; i < newGeneration.Count; i++)
 		{
 			if(RandomUtils.RollOdds(0.4f))
 			{
-				NeuralNetwork other = Elements[RandomUtils.RandomRange(elitistAmount, Elements.Count)];
+				NeuralNetwork other = newGeneration[RandomUtils.RandomRange(0, newGeneration.Count)];
 
-				float[] genome1 = Elements[i].Genome;
+				float[] genome1 = newGeneration[i].Genome;
 				float[] genome2 = other.Genome;
 
 				int middle = genome1.Length / 2;
@@ -159,32 +169,37 @@ public class Population
 				List<float> newGenome2 = new List<float>(genome2[0..middle]);
 				newGenome2.AddRange(genome1[middle..]);
 
-				Elements[i].Genome = newGenome1.ToArray();
+				newGeneration[i].Genome = newGenome1.ToArray();
 				other.Genome = newGenome2.ToArray();
 			}
 		}
+
+		return newGeneration;
 	}
 
-	public void Mutate(int elitistsAmount)
+	public List<NeuralNetwork> Mutate(List<NeuralNetwork> newGeneration)
 	{
-		Random rand = new Random();
 		float average = AverageFitness;
 
-		for(int i = elitistsAmount; i < Elements.Count; i++)
+		for(int i = 0; i < newGeneration.Count; i++)
 		{
 			if (RandomUtils.RollOdds(m_MutationRate))
 			{
-				bool aboveAverage = Elements[i].Fitness >= average;
-				Elements[i].MutateNetwork(aboveAverage);
+				bool aboveAverage = newGeneration[i].Fitness >= average;
+				newGeneration[i].MutateNetwork(aboveAverage);
 			}
 		}
+
+		return newGeneration;
 	}
-	private void ResetFitness()
+	private List<NeuralNetwork> ResetFitness(List<NeuralNetwork> newGeneration)
 	{
-		foreach(NeuralNetwork n in Elements)
+		foreach(NeuralNetwork n in newGeneration)
 		{
 			n.Fitness = 0;
 		}
+
+		return newGeneration;
 	}
 
 	public string[] SerializeNetworks()
