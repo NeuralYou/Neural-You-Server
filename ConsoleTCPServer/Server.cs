@@ -23,7 +23,9 @@ namespace ConsoleTCPServer
 
 		private void initPopulation(NetworkStream stream)
 		{
-			Population pop = new Population(mutationRate, 100, 5, 1);
+			int numberOfInputs = NetworkUtils.ReadInt(stream);
+			int numberOfOutputs = NetworkUtils.ReadInt(stream);
+			Population pop = new Population(mutationRate, 100, numberOfInputs, numberOfOutputs);
 			sendInitialResponse(pop, stream);
 		}
 
