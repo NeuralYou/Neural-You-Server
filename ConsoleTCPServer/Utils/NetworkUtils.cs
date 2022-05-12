@@ -2,7 +2,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
-
+using System.Threading.Tasks;
 
 public class NetworkUtils
 {
@@ -49,6 +49,7 @@ public class NetworkUtils
 	{
 		string rep = ReadString(i_Stream, i_LengthInBytes);
 		NeuralNetwork net = JsonConvert.DeserializeObject<NeuralNetwork>(rep);
+		// Task.Run(() => rep = ReadString(i_Stream, i_LengthInBytes)).ContinueWith((a) => net = JsonConvert.DeserializeObject<NeuralNetwork>(rep));
 		return net;
 	}
 
