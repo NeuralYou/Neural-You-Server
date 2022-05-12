@@ -58,35 +58,26 @@ public class Population
 		return pop.Count;
 	}
 
-	public List<NeuralNetwork> ApplyGeneticOperators()
+	public void ApplyGeneticOperators()
 	{
-		//List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
-		List<NeuralNetwork> elitists = Elitists(Elements);
-		//************************************************//
+		List<NeuralNetwork> elitists = Elitists(Elements, 0.1f);
 
 		List<NeuralNetwork> newPopulation = Select(Elements);
-		newPopulation = Crossover(newPopulation);
-		newPopulation = Mutate(newPopulation);
 
-		newPopulation = ResetFitness(newPopulation);
+		//Temporarily disabled crossover operator
+		//newPopulation = Crossover(newPopulation);
+		newPopulation = Mutate(newPopulation);
 
 		newPopulation.AddRange(elitists);
 
-		return newPopulation;
-
-
-
-		//int elitistsAmount = Elitists(newGeneration);
-		//Select(newGeneration);
-		//Crossover(elitistsAmount);
-		//Mutate(elitistsAmount);
-		//ResetFitness();
+		newPopulation = ResetFitness(newPopulation);
+		Elements = newPopulation;
 	}
-	private List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration)
-	{
-		int tenPercent = (int) (oldGeneration.Count * 0.1f);
 
-		//Implement an elitists operator which saves the 5 best individuals
+	private List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration, float precentage)
+	{
+		int tenPercent = (int) (oldGeneration.Count * precentage);
+
 		List<NeuralNetwork> temp = new List<NeuralNetwork>(oldGeneration);
 		temp.Sort();
 
@@ -98,7 +89,6 @@ public class Population
 		}
 
 		return elitists;
-		//return (List<NeuralNetwork>) elitists.Select(net => net.Clone());
 	}
 
 	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration)
@@ -123,31 +113,6 @@ public class Population
 		}
 
 		return newGeneration;
-
-
-
-		//int cloneLimit = 3;
-		//List<int> cloneCounters = new int[oldGeneration.Count].ToList();
-		//List<NeuralNetwork> tempPop = new List<NeuralNetwork>(Elements);
-
-		//for(int i = newGeneration.Count; i < m_PopulationSize; i++)
-		//{
-		//	NeuralNetwork winner = ThreeWayTournement(tempPop);
-		//	int winnerIndex = tempPop.FindIndex((NeuralNetwork other) => winner.Equals(other));
-		//	cloneCounters[winnerIndex]++;
-		//	newGeneration.Add(tempPop[winnerIndex]);
-
-		//	if (cloneCounters[winnerIndex] >= cloneLimit)
-		//	{
-		//		tempPop.RemoveAt(winnerIndex);
-		//		cloneCounters.RemoveAt(winnerIndex);
-		//	}
-		//}
-
-		//for(int i = 0; i < Elements.Count; i++)
-		//{
-		//	Elements[i] = Elements[i].Clone();
-		//}
 	}
 
 	//Crossover type is 1-point crossover
