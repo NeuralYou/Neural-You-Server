@@ -58,67 +58,108 @@ public class Population
 		return pop.Count;
 	}
 
-	public void ApplyGeneticOperators()
+	public List<NeuralNetwork> ApplyGeneticOperators()
 	{
-		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
-		int elitistsAmount = Elitists(newGeneration);
-		Select(newGeneration);
-		Crossover(elitistsAmount);
-		Mutate(elitistsAmount);
-		ResetFitness();
+		//List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
+		List<NeuralNetwork> elitists = Elitists(Elements);
+		//************************************************//
+
+		List<NeuralNetwork> newPopulation = Select(Elements);
+		newPopulation = Crossover(newPopulation);
+		newPopulation = Mutate(newPopulation);
+
+		newPopulation = ResetFitness(newPopulation);
+
+		newPopulation.AddRange(elitists);
+
+		return newPopulation;
+
+
+
+		//int elitistsAmount = Elitists(newGeneration);
+		//Select(newGeneration);
+		//Crossover(elitistsAmount);
+		//Mutate(elitistsAmount);
+		//ResetFitness();
 	}
-	private int Elitists(List<NeuralNetwork> newGeneration)
+	private List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration)
 	{
-		Elements.Sort();
-		int fivePrecent = (int) (pop.Count * 0.05f);
-		newGeneration.AddRange(Elements.GetRange(Elements.Count - fivePrecent, fivePrecent));
-		Console.WriteLine("Added " + fivePrecent);
-		return fivePrecent;
+		int tenPercent = (int) (oldGeneration.Count * 0.1f);
+
+		//Implement an elitists operator which saves the 5 best individuals
+		List<NeuralNetwork> temp = new List<NeuralNetwork>(oldGeneration);
+		temp.Sort();
+
+		List<NeuralNetwork> elitists = temp.GetRange(temp.Count - tenPercent, tenPercent);
+
+		for(int i = 0; i < elitists.Count; i++)
+		{
+			elitists[i] = elitists[i].Clone();
+		}
+
+		return elitists;
+		//return (List<NeuralNetwork>) elitists.Select(net => net.Clone());
 	}
 
-	public void Select(List<NeuralNetwork> newGeneration)
+	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration)
 	{
 		int cloneLimit = 3;
-		List<int> cloneCounters = new int[Elements.Count].ToList();
-		List<NeuralNetwork> tempPop = new List<NeuralNetwork>(Elements);
-		
-		for(int i = newGeneration.Count; i < m_PopulationSize; i++)
+		List<int> cloneCounters = new List<int>(new int[oldGeneration.Count]);
+		List<NeuralNetwork> tempPop = new List<NeuralNetwork>(oldGeneration);
+		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
+
+		for(int i = 10; i < oldGeneration.Count; i++)
 		{
 			NeuralNetwork winner = ThreeWayTournement(tempPop);
-			int winnerIndex = tempPop.FindIndex((NeuralNetwork other) => winner.Equals(other));
+			int winnerIndex = tempPop.FindIndex(net => winner.Equals(net));
 			cloneCounters[winnerIndex]++;
-			newGeneration.Add(tempPop[winnerIndex]);
-
-			if (cloneCounters[winnerIndex] >= cloneLimit)
+			if(cloneCounters[winnerIndex] >= cloneLimit)
 			{
 				tempPop.RemoveAt(winnerIndex);
 				cloneCounters.RemoveAt(winnerIndex);
 			}
+
+			newGeneration.Add(winner);
 		}
 
-		Elements = newGeneration;
+		return newGeneration;
 
-		for(int i = 0; i < Elements.Count; i++)
-		{
-			Elements[i] = Elements[i].Clone();
-		}
+
+
+		//int cloneLimit = 3;
+		//List<int> cloneCounters = new int[oldGeneration.Count].ToList();
+		//List<NeuralNetwork> tempPop = new List<NeuralNetwork>(Elements);
 
 		//for(int i = newGeneration.Count; i < m_PopulationSize; i++)
 		//{
-		//	newGeneration.Add(ThreeWayTournement());
+		//	NeuralNetwork winner = ThreeWayTournement(tempPop);
+		//	int winnerIndex = tempPop.FindIndex((NeuralNetwork other) => winner.Equals(other));
+		//	cloneCounters[winnerIndex]++;
+		//	newGeneration.Add(tempPop[winnerIndex]);
+
+		//	if (cloneCounters[winnerIndex] >= cloneLimit)
+		//	{
+		//		tempPop.RemoveAt(winnerIndex);
+		//		cloneCounters.RemoveAt(winnerIndex);
+		//	}
+		//}
+
+		//for(int i = 0; i < Elements.Count; i++)
+		//{
+		//	Elements[i] = Elements[i].Clone();
 		//}
 	}
 
 	//Crossover type is 1-point crossover
-	public void Crossover(int elitistAmount)
+	public List<NeuralNetwork> Crossover(List<NeuralNetwork> newGeneration)
 	{
-		for(int i = elitistAmount; i < Elements.Count; i++)
+		for(int i = 0; i < newGeneration.Count; i++)
 		{
 			if(RandomUtils.RollOdds(0.4f))
 			{
-				NeuralNetwork other = Elements[RandomUtils.RandomRange(elitistAmount, Elements.Count)];
+				NeuralNetwork other = newGeneration[RandomUtils.RandomRange(0, newGeneration.Count)];
 
-				float[] genome1 = Elements[i].Genome;
+				float[] genome1 = newGeneration[i].Genome;
 				float[] genome2 = other.Genome;
 
 				int middle = genome1.Length / 2;
@@ -128,32 +169,37 @@ public class Population
 				List<float> newGenome2 = new List<float>(genome2[0..middle]);
 				newGenome2.AddRange(genome1[middle..]);
 
-				Elements[i].Genome = newGenome1.ToArray();
+				newGeneration[i].Genome = newGenome1.ToArray();
 				other.Genome = newGenome2.ToArray();
 			}
 		}
+
+		return newGeneration;
 	}
 
-	public void Mutate(int elitistsAmount)
+	public List<NeuralNetwork> Mutate(List<NeuralNetwork> newGeneration)
 	{
-		Random rand = new Random();
 		float average = AverageFitness;
 
-		for(int i = elitistsAmount; i < Elements.Count; i++)
+		for(int i = 0; i < newGeneration.Count; i++)
 		{
 			if (RandomUtils.RollOdds(m_MutationRate))
 			{
-				bool aboveAverage = Elements[i].Fitness >= average;
-				Elements[i].MutateNetwork(aboveAverage);
+				bool aboveAverage = newGeneration[i].Fitness >= average;
+				newGeneration[i].MutateNetwork(aboveAverage);
 			}
 		}
+
+		return newGeneration;
 	}
-	private void ResetFitness()
+	private List<NeuralNetwork> ResetFitness(List<NeuralNetwork> newGeneration)
 	{
-		foreach(NeuralNetwork n in Elements)
+		foreach(NeuralNetwork n in newGeneration)
 		{
 			n.Fitness = 0;
 		}
+
+		return newGeneration;
 	}
 
 	public string[] SerializeNetworks()
