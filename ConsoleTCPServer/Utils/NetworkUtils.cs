@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 public class NetworkUtils
@@ -40,8 +42,13 @@ public class NetworkUtils
 	public static byte[] ReadBytes(NetworkStream i_Stream, int i_NumberOfBytes)
 	{
 		byte[] bytes = new byte[i_NumberOfBytes];
-		i_Stream.Read(bytes, 0, i_NumberOfBytes);
-		return bytes;
+
+		List<byte> bytes1 = new List<byte>();
+		for(int i = 0; i < i_NumberOfBytes; i++)
+		{
+			bytes1.Add((byte) i_Stream.ReadByte());
+		}
+		return bytes1.ToArray();
 
 	}
 
@@ -49,7 +56,7 @@ public class NetworkUtils
 	{
 		string rep = ReadString(i_Stream, i_LengthInBytes);
 		NeuralNetwork net = JsonConvert.DeserializeObject<NeuralNetwork>(rep);
-		// Task.Run(() => rep = ReadString(i_Stream, i_LengthInBytes)).ContinueWith((a) => net = JsonConvert.DeserializeObject<NeuralNetwork>(rep));
+		
 		return net;
 	}
 

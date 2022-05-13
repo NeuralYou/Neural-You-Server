@@ -14,15 +14,18 @@ namespace ConsoleTCPServer
 		public Server()
 		{
 			mutationRate = 0.05f;
-			path = FolderUtils.GetPathToCurrentFolder();
-			Console.WriteLine(path);
+			//path = FolderUtils.GetPathToCurrentFolder();
+			//Console.WriteLine(path);
 
 		}
 
 		private void initPopulation(NetworkStream stream)
 		{
+			Console.WriteLine("Sending initial response..");
 			int numberOfInputs = NetworkUtils.ReadInt(stream);
 			int numberOfOutputs = NetworkUtils.ReadInt(stream);
+
+			Console.WriteLine("sent network size..");
 			Population pop = new Population(mutationRate, 100, numberOfInputs, numberOfOutputs);
 			sendInitialResponse(pop, stream);
 		}
@@ -55,7 +58,7 @@ namespace ConsoleTCPServer
 					Console.WriteLine($"Recived {population.Size()} networks");
 					Console.WriteLine($"Processed population");
 
-					FolderUtils.StorePopulation(population, path);
+					//FolderUtils.StorePopulation(population, path);
 
 					ApplyGeneticOperators(population);
 
@@ -84,7 +87,6 @@ namespace ConsoleTCPServer
 
 				for (int i = 0; i < numberOfElements; i++)
 				{
-					Thread.Sleep(1);
 					NeuralNetwork n = ProcessIndividual(stream);
 					list.Add(n);
 				}
@@ -93,7 +95,9 @@ namespace ConsoleTCPServer
 
 		private void sendResponse(Population pop, NetworkStream stream)
 		{
+			Console.WriteLine("Sending response..");
 			NetworkUtils.WriteInt(stream, pop.Size());
+			Console.WriteLine("Sent population size: " + pop.Size());
 
 			foreach(NeuralNetwork p in pop.Elements)
 			{
@@ -113,6 +117,7 @@ namespace ConsoleTCPServer
 		private void sendInitialResponse(Population pop, NetworkStream stream)
 		{
 			NetworkUtils.WriteInt(stream, pop.Size());
+			Console.WriteLine("Sent population size: " + pop.Size());
 
 			foreach (NeuralNetwork p in pop.Elements)
 			{
