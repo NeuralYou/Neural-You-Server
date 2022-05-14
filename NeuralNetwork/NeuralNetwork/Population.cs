@@ -100,7 +100,7 @@ public class Population
 
 		for(int i = 10; i < oldGeneration.Count; i++)
 		{
-			NeuralNetwork winner = ThreeWayTournement(tempPop);
+			NeuralNetwork winner = RandomUtils.Tournement(tempPop, 3);
 			int winnerIndex = tempPop.FindIndex(net => winner.Equals(net));
 			cloneCounters[winnerIndex]++;
 			if(cloneCounters[winnerIndex] >= cloneLimit)
@@ -178,24 +178,6 @@ public class Population
 		}
 
 		return list.ToArray();
-	}
-
-	private NeuralNetwork ThreeWayTournement()
-	{
-		NeuralNetwork p1 = RandomUtils.RandomElement(Elements);
-		NeuralNetwork p2 = RandomUtils.RandomElement(Elements);
-		NeuralNetwork p3 = RandomUtils.RandomElement(Elements);
-
-		return Fitter(Fitter(p1, p2), p3);
-	}
-	
-	private NeuralNetwork ThreeWayTournement(List<NeuralNetwork> elements)
-	{
-		NeuralNetwork p1 = RandomUtils.RandomElement(elements);
-		NeuralNetwork p2 = RandomUtils.RandomElement(elements);
-		NeuralNetwork p3 = RandomUtils.RandomElement(elements);
-
-		return Fitter(Fitter(p1, p2), p3);
 	}
 
 	private NeuralNetwork Fitter(NeuralNetwork network1, NeuralNetwork network2)
