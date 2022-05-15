@@ -12,18 +12,21 @@ public static class KMeansUtils
         float[][] centerPoints = createInitialCenters(elements, k);
      
         int numberOfIterations = 3;
-        List<List<NeuralNetwork>> clusters;
+        List<List<NeuralNetwork>> clusters = null;
         for (int i = 0; i < numberOfIterations; i++)
         {
             clusters = GenerateClusters(elements, k, centerPoints);
+            centerPoints = recreateCenterPoints(clusters);
         }
+
+        return clusters;
     }
 
     private static float[][] recreateCenterPoints(List<List<NeuralNetwork>> clusters)
     {
         float[][] centerPoints = new float[clusters.Count][];
-        int genomeLength = clusters[0][0].Genome.Length;
-
+        int genomeLength = clusters.FirstOrDefault(list => list.Count != 0)[0].Genome.Length;
+        
         for(int i = 0; i < centerPoints.Length; i++)
         {
             float[] newCenter = new float[genomeLength];
@@ -43,7 +46,13 @@ public static class KMeansUtils
 
     private static List<List<NeuralNetwork>> GenerateClusters(List<NeuralNetwork> elements, int k, float[][] centerPoints)
     {
-        List<List<NeuralNetwork>> clusters = new List<List<NeuralNetwork>>(k);
+        List<List<NeuralNetwork>> clusters = new List<List<NeuralNetwork>>();
+        for(int i = 0; i < k; i++)
+        {
+            clusters.Add(new List<NeuralNetwork>());
+        }
+
+
         foreach (NeuralNetwork n in elements)
         {
             int closestCenterIndex = 0;
@@ -54,6 +63,9 @@ public static class KMeansUtils
                     closestCenterIndex = i;
                 }
             }
+
+            Console.WriteLine(closestCenterIndex);
+            Console.WriteLine("Number of clusters: " + clusters.Count);
             clusters[closestCenterIndex].Add(n);
         }
 
@@ -64,7 +76,12 @@ public static class KMeansUtils
     {
         float[][] centerPoints = new float[k][];
         int genomeLength = elements[0].Genome.Length;
-        centerPoints = (float[][])centerPoints.Select(point => new float[genomeLength]);
+        
+        for(int i = 0; i < centerPoints.Length; i++)
+        {
+            centerPoints[i] = new float[genomeLength];
+        }
+
         float minWeight = elements[0].Genome[0];
         float maxWeight = elements[0].Genome[0];
 
