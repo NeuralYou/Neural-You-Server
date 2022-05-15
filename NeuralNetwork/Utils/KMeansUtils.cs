@@ -9,7 +9,7 @@ public static class KMeansUtils
 
         //Finding the proper dimensions of the genome space
 
-        float[][] centerPoints = createInitialCenters(elements, k);
+        float[][] centerPoints = altCreateInitialCenters(elements, k);
      
         int numberOfIterations = 3;
         List<List<NeuralNetwork>> clusters = null;
@@ -26,7 +26,7 @@ public static class KMeansUtils
     {
         float[][] centerPoints = new float[clusters.Count][];
         int genomeLength = clusters.FirstOrDefault(list => list.Count != 0)[0].Genome.Length;
-        
+
         for(int i = 0; i < centerPoints.Length; i++)
         {
             float[] newCenter = new float[genomeLength];
@@ -38,6 +38,11 @@ public static class KMeansUtils
                     newCenter[j] += genome[j];
                 }
             }
+            for(int j = 0; j < newCenter.Length; j++)
+            {
+                newCenter[j] /= clusters[i].Count;
+            }
+
             centerPoints[i] = newCenter;
         }
 
@@ -72,6 +77,23 @@ public static class KMeansUtils
         return clusters;
     }
 
+
+    private static float[][] altCreateInitialCenters(List<NeuralNetwork> elements, int k)
+    {   
+        float[][] centers = new float[k][];
+        for(int i = 0; i < k; i++)
+        {
+            NeuralNetwork n = RandomUtils.RandomElement(elements);
+            while(centers.Contains(n.Genome))
+            {
+                n = RandomUtils.RandomElement(elements);
+            }
+            centers[i] = n.Genome;
+        }
+
+        Console.WriteLine(centers.Length);
+        return centers.ToArray();
+    }
     private static float[][] createInitialCenters(List<NeuralNetwork> elements, int k)
     {
         float[][] centerPoints = new float[k][];
