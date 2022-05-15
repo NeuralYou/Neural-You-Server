@@ -1,4 +1,6 @@
-﻿namespace ConsoleTCPServer
+﻿using System;
+using System.Collections.Generic;
+namespace ConsoleTCPServer
 {
 	class Program
 	{
