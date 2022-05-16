@@ -58,20 +58,45 @@ public class Population
 		return pop.Count;
 	}
 
-	public void ApplyGeneticOperators()
+	public List<NeuralNetwork> ApplyGeneticOperators()
 	{
-		List<NeuralNetwork> elitists = Elitists(Elements, 0.1f);
+		//Bucket version:
+		List<List<NeuralNetwork>> buckets = KMeansUtils.ClusterByFitness(Elements, 5);
 
-		List<NeuralNetwork> newPopulation = Select(Elements);
+		
+		buckets = BucketSelect(buckets);
 
-		//Temporarily disabled crossover operator
-		//newPopulation = Crossover(newPopulation);
-		newPopulation = Mutate(newPopulation);
+		for(int i = 0; i < buckets.Count; i++)
+		{
+			buckets[i] = Mutate(buckets[i]);
+		}
 
-		newPopulation.AddRange(elitists);
+		for(int i = 0; i < buckets.Count; i++)
+		{
+			buckets[i] = ResetFitness(buckets[i]);
+		}
 
-		newPopulation = ResetFitness(newPopulation);
-		Elements = newPopulation;
+		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
+		foreach(List<NeuralNetwork> bucket in buckets)
+		{
+			newGeneration.AddRange(bucket);
+		}
+
+		return newGeneration;
+
+
+
+
+		//No Bucket version:
+		// List<NeuralNetwork> elitists = Elitists(Elements, 0.1f);
+		// List<NeuralNetwork> newPopulation = Select(Elements);
+
+		// //Temporarily disabled crossover operator
+		// //newPopulation = Crossover(newPopulation);
+		// newPopulation = Mutate(newPopulation);
+		// newPopulation.AddRange(elitists);
+		// newPopulation = ResetFitness(newPopulation);
+		// Elements = newPopulation;
 	}
 
 	private List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration, float precentage)
@@ -91,25 +116,42 @@ public class Population
 		return elitists;
 	}
 
-	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration)
+
+	public List<List<NeuralNetwork>> BucketSelect(List<List<NeuralNetwork>> oldGeneration)
 	{
-		int cloneLimit = 3;
-		List<int> cloneCounters = new List<int>(new int[oldGeneration.Count]);
-		List<NeuralNetwork> tempPop = new List<NeuralNetwork>(oldGeneration);
+		int bucketSize = m_PopulationSize / oldGeneration.Count;
+		List<List<NeuralNetwork>> newGeneration = new List<List<NeuralNetwork>>();
+		for(int i = 0; i < oldGeneration.Count; i++)
+		{
+			Console.WriteLine($"bucket number: {i}\t elements: {oldGeneration[i].Count}");
+		}
+		for(int i = 0; i < oldGeneration.Count; i++)
+		{
+			newGeneration.Add(Select(oldGeneration[i], bucketSize));
+		}
+
+		return newGeneration;
+	}
+
+	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration, int bucketSize)
+	{
+		// int cloneLimit = 3;
+		// List<int> cloneCounters = new List<int>(new int[oldGeneration.Count]);
+		// List<NeuralNetwork> tempPop = new List<NeuralNetwork>(oldGeneration);
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 
-		for(int i = 10; i < oldGeneration.Count; i++)
+		for(int i = 0; i < bucketSize; i++)
 		{
-			NeuralNetwork winner = RandomUtils.Tournement(tempPop, 3);
-			int winnerIndex = tempPop.FindIndex(net => winner.Equals(net));
-			cloneCounters[winnerIndex]++;
-			if(cloneCounters[winnerIndex] >= cloneLimit)
-			{
-				tempPop.RemoveAt(winnerIndex);
-				cloneCounters.RemoveAt(winnerIndex);
-			}
+			NeuralNetwork winner = RandomUtils.Tournement(oldGeneration, 3);
+			newGeneration.Add(winner.Clone());
+			// int winnerIndex = tempPop.FindIndex(net => winner.Equals(net));
+			// cloneCounters[winnerIndex]++;
+			// if(cloneCounters[winnerIndex] >= cloneLimit)
+			// {
+				// tempPop.RemoveAt(winnerIndex);
+				// cloneCounters.RemoveAt(winnerIndex);
+			// }
 
-			newGeneration.Add(winner);
 		}
 
 		return newGeneration;
@@ -144,7 +186,14 @@ public class Population
 
 	public List<NeuralNetwork> Mutate(List<NeuralNetwork> newGeneration)
 	{
-		float average = AverageFitness;
+		float average = 0;
+
+		foreach(NeuralNetwork n in newGeneration)
+		{
+			average += n.Fitness;
+		}
+
+		average /= newGeneration.Count;
 
 		for(int i = 0; i < newGeneration.Count; i++)
 		{

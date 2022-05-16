@@ -13,7 +13,7 @@ namespace ConsoleTCPServer
 
 		public Server()
 		{
-			mutationRate = 0.05f;
+			mutationRate = 0.1f;
 			//path = FolderUtils.GetPathToCurrentFolder();
 			//Console.WriteLine(path);
 
@@ -60,7 +60,7 @@ namespace ConsoleTCPServer
 
 					//FolderUtils.StorePopulation(population, path);
 
-					ApplyGeneticOperators(population);
+					population = ApplyGeneticOperators(population);
 
 					sendResponse(population, stream);
 					Console.WriteLine("Sent Response\n\n");
@@ -76,8 +76,7 @@ namespace ConsoleTCPServer
 
 		private Population ApplyGeneticOperators(Population population)
 		{
-			population.ApplyGeneticOperators();
-			return population;
+			return new Population(population.ApplyGeneticOperators().ToArray(), 0.1f);
 		}
 
 		private Population ParsePopulation(NetworkStream stream)
