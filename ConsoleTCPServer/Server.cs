@@ -76,6 +76,7 @@ namespace ConsoleTCPServer
 
 		private Population ApplyGeneticOperators(Population population)
 		{
+			
 			population.ApplyGeneticOperators();
 			return population;
 		}
