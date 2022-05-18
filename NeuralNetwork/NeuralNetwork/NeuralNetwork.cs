@@ -136,11 +136,19 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		}
 	}
 	
-	public void MutateNetwork(bool biasedMutation)
+	public void MutateNetwork(bool biasedMutation, float mutationRate)
 	{
 		//**** Mutating input weights ****//
-		MutateNode(biasedMutation);
+		// MutateNode(biasedMutation);
 
+
+		for(int i = 0; i < hidden.Length; i++)
+		{
+			if(RandomUtils.RollOdds(mutationRate))
+			mutateNode(i);
+		}
+
+		
 		//****Mutating output weights ****//
 		//List<Neuron> neurons = ChooseRandomNodesForMutation();
 
@@ -148,6 +156,14 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		//{
 		//	n.Mutate(biasedMutation); 
 		//}
+	}
+
+	private void mutateNode(int nodeIndex)
+	{
+		foreach(InputNeuron n in inputs)
+		{
+			n.MutateWeight(nodeIndex, true);
+		}
 	}
 
 	public void MutateNode(bool biasedMutation)

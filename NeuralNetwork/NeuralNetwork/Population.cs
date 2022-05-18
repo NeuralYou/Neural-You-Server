@@ -177,20 +177,17 @@ public class Population
 	{
 		float average = 0;
 
-		foreach(NeuralNetwork n in newGeneration)
-		{
-			average += n.Fitness;
-		}
+		// foreach(NeuralNetwork n in newGeneration)
+		// {
+		// 	average += n.Fitness;
+		// }
 
 		average /= newGeneration.Count;
 
 		for(int i = 0; i < newGeneration.Count; i++)
 		{
-			if (RandomUtils.RollOdds(m_MutationRate))
-			{
-				bool aboveAverage = newGeneration[i].Fitness >= average;
-				newGeneration[i].MutateNetwork(aboveAverage);
-			}
+			bool aboveAverage = newGeneration[i].Fitness >= average;
+			newGeneration[i].MutateNetwork(aboveAverage, m_MutationRate);
 		}
 
 		return newGeneration;
