@@ -16,7 +16,6 @@ namespace ConsoleTCPServer
 			mutationRate = 0.1f;
 			//path = FolderUtils.GetPathToCurrentFolder();
 			//Console.WriteLine(path);
-
 		}
 
 		private void initPopulation(NetworkStream stream)
