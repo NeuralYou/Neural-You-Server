@@ -61,8 +61,8 @@ public class Population
 	public List<NeuralNetwork> ApplyGeneticOperators()
 	{
 		//Bucket version:
-		List<List<NeuralNetwork>> buckets = KMeansUtils.ClusterByFitness(Elements, 5);
-
+		List<NeuralNetwork>[] clusters = KMeansUtils.Cluster(Elements, 5);
+		List<List<NeuralNetwork>> buckets = clusters.ToList();
 		
 		buckets = BucketSelect(buckets);
 
@@ -135,23 +135,12 @@ public class Population
 
 	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration, int bucketSize)
 	{
-		// int cloneLimit = 3;
-		// List<int> cloneCounters = new List<int>(new int[oldGeneration.Count]);
-		// List<NeuralNetwork> tempPop = new List<NeuralNetwork>(oldGeneration);
 		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
 
 		for(int i = 0; i < bucketSize; i++)
 		{
 			NeuralNetwork winner = RandomUtils.Tournement(oldGeneration, 3);
 			newGeneration.Add(winner.Clone());
-			// int winnerIndex = tempPop.FindIndex(net => winner.Equals(net));
-			// cloneCounters[winnerIndex]++;
-			// if(cloneCounters[winnerIndex] >= cloneLimit)
-			// {
-				// tempPop.RemoveAt(winnerIndex);
-				// cloneCounters.RemoveAt(winnerIndex);
-			// }
-
 		}
 
 		return newGeneration;

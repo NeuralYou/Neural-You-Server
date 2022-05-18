@@ -191,6 +191,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 	{
 		NeuralNetwork n = new NeuralNetwork(inputs.Length, outputs.Length);
 		n.Fitness = Fitness;
+		
 		for(int i = 0; i < n.inputs.Length; i++)
 		{
 			n.inputs[i] = inputs[i].Clone();
