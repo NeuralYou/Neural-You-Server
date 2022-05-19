@@ -13,7 +13,7 @@ namespace ConsoleTCPServer
 
 		public Server()
 		{
-			mutationRate = 0.05f;
+			mutationRate = 0.2f;
 			//path = FolderUtils.GetPathToCurrentFolder();
 			//Console.WriteLine(path);
 		}

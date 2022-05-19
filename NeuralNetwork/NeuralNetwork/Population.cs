@@ -61,14 +61,42 @@ public class Population
 	public List<NeuralNetwork> ApplyGeneticOperators()
 	{
 		//Bucket version:
-		List<NeuralNetwork>[] clusters = KMeansUtils.Cluster(Elements, 5);
+		List<NeuralNetwork>[] clusters = KMeansUtils.Cluster(Elements, 10);
 		List<List<NeuralNetwork>> buckets = clusters.ToList();
 		
+		buckets.Sort((a, b) => 
+		{
+			float avgA = 0, avgB = 0;
+			foreach(NeuralNetwork n in a)
+				avgA += n.Fitness;
+			avgA /= a.Count;
+
+			foreach(NeuralNetwork n in b)
+				avgB += n.Fitness;
+			avgB /= b.Count;
+
+			return Math.Sign(avgA - avgB);
+		});
+
+
+		int listCount = 0;
+		foreach(List<NeuralNetwork> list in buckets)
+		{
+			float avg = 0;
+			foreach(NeuralNetwork n in list)
+			{
+				avg += n.Fitness;
+			}
+
+			avg /= list.Count;
+			Console.WriteLine($"list {listCount} average fitness: {avg}");
+		}
+
 		buckets = BucketSelect(buckets);
 
 		for(int i = 0; i < buckets.Count; i++)
 		{
-			buckets[i] = Mutate(buckets[i]);
+			buckets[i] = Mutate(buckets[i], i + 1);
 		}
 
 		for(int i = 0; i < buckets.Count; i++)
@@ -133,17 +161,17 @@ public class Population
 		return newGeneration;
 	}
 
-	public List<NeuralNetwork> Select(List<NeuralNetwork> oldGeneration, int bucketSize)
+	public List<NeuralNetwork> Select(List<NeuralNetwork> oldBucket, int bucketSize)
 	{
-		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
+		List<NeuralNetwork> newBucket = new List<NeuralNetwork>();
 
 		for(int i = 0; i < bucketSize; i++)
 		{
-			NeuralNetwork winner = RandomUtils.Tournement(oldGeneration, 3);
-			newGeneration.Add(winner.Clone());
+			NeuralNetwork winner = RandomUtils.Tournement(oldBucket, 3);
+			newBucket.Add(winner.Clone());
 		}
 
-		return newGeneration;
+		return newBucket;
 	}
 
 	//Crossover type is 1-point crossover
@@ -173,24 +201,15 @@ public class Population
 		return newGeneration;
 	}
 
-	public List<NeuralNetwork> Mutate(List<NeuralNetwork> newGeneration)
+	public List<NeuralNetwork> Mutate(List<NeuralNetwork> bucket, float bucketMutationChance)
 	{
-		float average = 0;
 
-		// foreach(NeuralNetwork n in newGeneration)
-		// {
-		// 	average += n.Fitness;
-		// }
-
-		average /= newGeneration.Count;
-
-		for(int i = 0; i < newGeneration.Count; i++)
+		for(int i = 0; i < bucket.Count; i++)
 		{
-			bool aboveAverage = newGeneration[i].Fitness >= average;
-			newGeneration[i].MutateNetwork(aboveAverage, m_MutationRate);
+			bucket[i].MutateNetwork(m_MutationRate * 1/bucketMutationChance);
 		}
 
-		return newGeneration;
+		return bucket;
 	}
 	private List<NeuralNetwork> ResetFitness(List<NeuralNetwork> newGeneration)
 	{

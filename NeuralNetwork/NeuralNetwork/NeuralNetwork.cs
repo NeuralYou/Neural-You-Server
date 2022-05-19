@@ -35,7 +35,6 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 			List<float> genome = new List<float>(Genome);
 			if (value.Length != genome.Count)
 			{
-				Console.WriteLine("*************************************");
 				Console.WriteLine($"Expected length: {genome.Count}\t recieved count: {value.Length}");
 				throw new ArgumentException();
 			}
@@ -60,14 +59,14 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		}
 	}
 
-	
 	public NeuralNetwork(int i_NumberOfInputs, int i_NumberOfOutputs)
 	{
 		networkThreshold = 0.3f;
 		inputs = new InputNeuron[i_NumberOfInputs];
 		outputs = new OutputNeuron[i_NumberOfOutputs];
 
-		int numberOfHiddenNeurons = (i_NumberOfInputs * 2) + 1;
+		int numberOfHiddenNeurons = 4;
+		// int numberOfHiddenNeurons = (i_NumberOfInputs * 2) + 1;
 		hidden = new HiddenNeuron[numberOfHiddenNeurons];
 		InitNeurons();
 	}
@@ -136,44 +135,31 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		}
 	}
 	
-	public void MutateNetwork(bool biasedMutation, float mutationRate)
+	public void MutateNetwork(float mutationRate)
 	{
-		//**** Mutating input weights ****//
-		// MutateNode(biasedMutation);
-
-
 		for(int i = 0; i < hidden.Length; i++)
 		{
 			if(RandomUtils.RollOdds(mutationRate))
 			mutateNode(i);
 		}
-
-		
-		//****Mutating output weights ****//
-		//List<Neuron> neurons = ChooseRandomNodesForMutation();
-
-		//foreach (Neuron n in neurons)
-		//{
-		//	n.Mutate(biasedMutation); 
-		//}
 	}
-
+	
 	private void mutateNode(int nodeIndex)
 	{
 		foreach(InputNeuron n in inputs)
 		{
-			n.MutateWeight(nodeIndex, true);
+			n.MutateWeight(nodeIndex);
 		}
 	}
 
-	public void MutateNode(bool biasedMutation)
-	{
-		int index = RandomUtils.RandomRange(0, hidden.Length);
-		foreach(InputNeuron n in inputs)
-		{
-			n.MutateWeight(index, biasedMutation);
-		}
-	}
+	// public void MutateNode(bool biasedMutation)
+	// {
+	// 	int index = RandomUtils.RandomRange(0, hidden.Length);
+	// 	foreach(InputNeuron n in inputs)
+	// 	{
+	// 		n.MutateWeight(index, biasedMutation);
+	// 	}
+	// }
 
 	private List<Neuron> ChooseRandomNodesForMutation()
 	{
