@@ -37,17 +37,11 @@ public static class KMeansUtils
 
         clusters = clusters.Select(list => new List<NeuralNetwork>()).ToArray();
 
-        foreach(List<NeuralNetwork> list in clusters)
-        {
-            Console.WriteLine("list is null? " + list == null);
-        }
-
         List<NeuralNetwork> copy = new List<NeuralNetwork>(elements);
         for(int i = 0; i < k; i++)
         {
             NeuralNetwork n = RandomUtils.RandomElement(elements);
             clusters[i].Add(n);
-            Console.WriteLine("Remove successful? " + copy.Remove(n));
         }
 
         return clusters;

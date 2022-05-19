@@ -25,9 +25,9 @@ public class InputNeuron : Neuron
 		return n;
 	}
 
-	internal void MutateWeight(int index, bool biasedMutation)
+	internal void MutateWeight(int index)
 	{
 		float value = RandomUtils.RandomRange(-3f, 3f);
-		outputWeights[index] = biasedMutation ? outputWeights[index] + value : value;
+		outputWeights[index] += value;
 	}
 }
