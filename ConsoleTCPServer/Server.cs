@@ -14,8 +14,8 @@ namespace ConsoleTCPServer
 		public Server()
 		{
 			mutationRate = 0.2f;
-			//path = FolderUtils.GetPathToCurrentFolder();
-			//Console.WriteLine(path);
+			path = FolderUtils.GetPathToCurrentFolder();
+			Console.WriteLine(path);
 		}
 
 		private void initPopulation(NetworkStream stream)
@@ -57,7 +57,8 @@ namespace ConsoleTCPServer
 					Console.WriteLine($"Recived {population.Size()} networks");
 					Console.WriteLine($"Processed population");
 
-					//FolderUtils.StorePopulation(population, path);
+					FolderUtils.StorePopulation(population, path);
+					FolderUtils.StoreBest(population.GetFittest());
 
 					population = ApplyGeneticOperators(population);
 
