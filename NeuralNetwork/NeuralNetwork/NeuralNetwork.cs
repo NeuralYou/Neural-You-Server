@@ -140,7 +140,17 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		for(int i = 0; i < hidden.Length; i++)
 		{
 			if(RandomUtils.RollOdds(mutationRate))
-			mutateNode(i);
+				mutateNode(i);
+		}
+
+		foreach(HiddenNeuron n in hidden)
+		{
+			for(int i = 0; i < n.outputWeights.Length; i++)
+			{
+				if(RandomUtils.RollOdds(mutationRate))
+					n.outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+			}
+
 		}
 	}
 	

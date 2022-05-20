@@ -47,6 +47,51 @@ public static class KMeansUtils
         return clusters;
     }
 
+    private static float[] variance(List<NeuralNetwork>[] clusters)
+    {
+        float[] variances = new float[clusters.Length];
+        
+        foreach(List<NeuralNetwork> list in clusters)
+        {
+            //The point of this function is to find the overall variance of clusters.
+            //this is done by calculating the variance of each cluster, then averaging these
+            //averages.
+
+            //inside this foreach loop, the variance of a single cluster 
+            //will be calculated.
+
+            //each cluster is basically a 2D array of floating point numbers.
+
+
+            //Sum all values to the the mean of each position.
+            float[] currentClusterMeans = new float[variances.Length];
+            for(int i = 0; i < list.Count; i++)
+            {
+                float[] genome = list[i].Genome;
+                for(int j = 0 ; j < currentClusterMeans.Length; j++)
+                {
+                    currentClusterMeans[j] += genome[j];
+                }
+            }
+
+            //Produce the actual mean values.
+            for(int i = 0; i < currentClusterMeans.Length; i++)
+            {
+                currentClusterMeans[i] /= list.Count;
+            }
+
+            //Calculate the overall variance of this cluster
+
+            float clusterVariance = 1;
+            foreach(float f in currentClusterMeans)
+            {
+
+            }
+
+        }
+            return new float[]{};
+    }
+
     private static float distance(float[] element1, float[] element2)
 	{
 		float[] diffSquaredSums = new float[element1.Length];
