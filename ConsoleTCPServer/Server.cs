@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace ConsoleTCPServer
 {
@@ -13,7 +12,7 @@ namespace ConsoleTCPServer
 
 		public Server()
 		{
-			mutationRate = 0.2f;
+			mutationRate = 0.01f;
 			path = FolderUtils.GetPathToCurrentFolder();
 			Console.WriteLine(path);
 		}
