@@ -78,7 +78,6 @@ public class Population
 			return Math.Sign(avgA - avgB);
 		});
 
-
 		int listCount = 0;
 		foreach(List<NeuralNetwork> list in buckets)
 		{
@@ -89,7 +88,7 @@ public class Population
 			}
 
 			avg /= list.Count;
-			Console.WriteLine($"list {listCount} average fitness: {avg}");
+			Console.WriteLine($"list {listCount++} average fitness: {avg}");
 		}
 
 		buckets = BucketSelect(buckets);
@@ -153,6 +152,7 @@ public class Population
 		{
 			Console.WriteLine($"bucket number: {i}\t elements: {oldGeneration[i].Count}");
 		}
+
 		for(int i = 0; i < oldGeneration.Count; i++)
 		{
 			newGeneration.Add(Select(oldGeneration[i], bucketSize));
@@ -206,7 +206,7 @@ public class Population
 
 		for(int i = 0; i < bucket.Count; i++)
 		{
-			bucket[i].MutateNetwork(m_MutationRate * 1/bucketMutationChance);
+			bucket[i].MutateNetwork(m_MutationRate);// * 1/bucketMutationChance);
 		}
 
 		return bucket;
@@ -244,5 +244,17 @@ public class Population
 		List<NeuralNetwork> sorted = new List<NeuralNetwork>(Elements);
 		sorted.Sort();
 		return sorted.Last();
+	}
+
+	public static List<NeuralNetwork> GenerateNetworks(int amount, int numberOfInputs, int numberOfOutputs)
+	{
+		List<NeuralNetwork> networks = new List<NeuralNetwork>();
+		for(int i = 0; i < amount; i++)
+		{
+			NeuralNetwork n = new NeuralNetwork(numberOfInputs, numberOfOutputs);
+			networks.Add(n);
+		}
+
+		return networks;
 	}
 }

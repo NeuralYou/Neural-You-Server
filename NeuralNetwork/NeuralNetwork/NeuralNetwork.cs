@@ -11,6 +11,10 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 	float networkThreshold;
 
 	public float Fitness { get; set; }
+
+	public int InputCount{ get {return inputs.Length;}	}
+	public int OutputCount{ get { return outputs.Length; } }
+
 	[JsonIgnore] public float[] Genome
 	{
 		get
@@ -137,10 +141,16 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 	
 	public void MutateNetwork(float mutationRate)
 	{
-		for(int i = 0; i < hidden.Length; i++)
+		foreach(InputNeuron n in inputs)
 		{
-			if(RandomUtils.RollOdds(mutationRate))
-				mutateNode(i);
+			for(int i = 0; i < n.outputWeights.Length; i++)
+			{
+				if(RandomUtils.RollOdds(mutationRate))
+					n.outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+			}
+				
+				// mutateNode(i);
+
 		}
 
 		foreach(HiddenNeuron n in hidden)
