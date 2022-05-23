@@ -25,28 +25,28 @@ public static class FolderUtils
 
 	}
 
-	public static void GenerateMetaData(Population pop, string path)
-	{
-		float highestFitness = pop.GetFittest().Fitness;
-		float averageFitness = 0;
+	// public static void GenerateMetaData(Population pop, string path)
+	// {
+	// 	float highestFitness = pop.GetFittest().Fitness;
+	// 	float averageFitness = 0;
 
-		string fileName = "Population data.txt";
-		string date = DateTime.Now.ToString();
+	// 	string fileName = "Population data.txt";
+	// 	string date = DateTime.Now.ToString();
 
-		foreach (NeuralNetwork n in pop.Elements)
-		{
-			averageFitness += n.Fitness;
-		}
+	// 	foreach (NeuralNetwork n in pop.Elements)
+	// 	{
+	// 		averageFitness += n.Fitness;
+	// 	}
 
-		averageFitness /= pop.Size();
-		string fullPath = Path.Combine(path, fileName);
-		StreamWriter write = new StreamWriter(fullPath);
-		write.Write("Date: " + date + "\n");
-		write.Write("Elements in generation: " + pop.Size() + "\n");
-		write.Write("Highest Fitness: " + highestFitness + "\n");
-		write.Write("Average Fitness: " + averageFitness + "\n");
-		write.Close();
-	}
+	// 	averageFitness /= pop.Size();
+	// 	string fullPath = Path.Combine(path, fileName);
+	// 	StreamWriter write = new StreamWriter(fullPath);
+	// 	write.Write("Date: " + date + "\n");
+	// 	write.Write("Elements in generation: " + pop.Size() + "\n");
+	// 	write.Write("Highest Fitness: " + highestFitness + "\n");
+	// 	write.Write("Average Fitness: " + averageFitness + "\n");
+	// 	write.Close();
+	// }
 
 	//***************PATH IS HARD CODED!!!!!*******************//
 	//***************PATH IS HARD CODED!!!!!*******************//

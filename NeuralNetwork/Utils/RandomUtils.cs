@@ -45,4 +45,5 @@ class RandomUtils
 
 		return best;
 	}
+
 }
