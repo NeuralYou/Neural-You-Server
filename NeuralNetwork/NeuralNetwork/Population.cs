@@ -25,7 +25,7 @@ public class Population
 	public List<NeuralNetwork> Elements
 	{
 		get { return pop; }
-		private set { pop = value; }
+		init { pop = value; }
 	}
 
 	public Population(float i_MutationRate, int i_PopulationSize, int i_Inputs, int i_Outputs)
@@ -33,29 +33,24 @@ public class Population
 		m_MutationRate = i_MutationRate;
 		m_PopulationSize = i_PopulationSize;
 
-		initPopulation(i_Inputs, i_Outputs);
+		Elements = new List<NeuralNetwork>();
+		for(int i = 0; i < m_PopulationSize; i++)
+		{
+			NeuralNetwork n = new NeuralNetwork(i_Inputs, i_Outputs);
+			Elements.Add(n);
+		}
 	}
 
 	public Population(NeuralNetwork[] networks, float i_MutationRate)
 	{
-		pop = new List<NeuralNetwork>(networks);
-		m_PopulationSize = pop.Count;
+		Elements = new List<NeuralNetwork>(networks);
+		m_PopulationSize = Elements.Count;
 		m_MutationRate = i_MutationRate;
-	}
-
-	private void initPopulation(int i_Inputs, int i_Outputs)
-	{
-		pop = new List<NeuralNetwork>();
-		for(int i = 0; i < m_PopulationSize; i++)
-		{
-			NeuralNetwork n = new NeuralNetwork(i_Inputs, i_Outputs);
-			pop.Add(n);
-		}
 	}
 
 	public int Size()
 	{
-		return pop.Count;
+		return Elements.Count;
 	}
 
 	public List<NeuralNetwork> ApplyGeneticOperators()
@@ -91,7 +86,14 @@ public class Population
 			Console.WriteLine($"list {listCount++} average fitness: {avg}");
 		}
 
-		buckets = BucketSelect(buckets);
+		List<NeuralNetwork>[] elitists = new List<NeuralNetwork>[buckets.Count];
+		for(int i = 0; i < buckets.Count; i++)
+		{
+			elitists[i] = Elitists(buckets[i], 0.1f);
+		}
+		
+		buckets = BucketSelect(buckets, elitists);
+
 
 		for(int i = 0; i < buckets.Count; i++)
 		{
@@ -109,10 +111,12 @@ public class Population
 			newGeneration.AddRange(bucket);
 		}
 
+		foreach(List<NeuralNetwork> elite in elitists)
+		{
+			newGeneration.AddRange(elite);
+		}
+
 		return newGeneration;
-
-
-
 
 		//No Bucket version:
 		// List<NeuralNetwork> elitists = Elitists(Elements, 0.1f);
@@ -144,7 +148,7 @@ public class Population
 	}
 
 
-	public List<List<NeuralNetwork>> BucketSelect(List<List<NeuralNetwork>> oldGeneration)
+	public List<List<NeuralNetwork>> BucketSelect(List<List<NeuralNetwork>> oldGeneration, List<NeuralNetwork>[] elitists)
 	{
 		int bucketSize = m_PopulationSize / oldGeneration.Count;
 		List<List<NeuralNetwork>> newGeneration = new List<List<NeuralNetwork>>();
@@ -155,7 +159,8 @@ public class Population
 
 		for(int i = 0; i < oldGeneration.Count; i++)
 		{
-			newGeneration.Add(Select(oldGeneration[i], bucketSize));
+			int eliteReductionSize = elitists[i].Count;
+			newGeneration.Add(Select(oldGeneration[i], bucketSize - eliteReductionSize));
 		}
 
 		return newGeneration;
@@ -241,9 +246,16 @@ public class Population
 
 	public NeuralNetwork GetFittest()
 	{
-		List<NeuralNetwork> sorted = new List<NeuralNetwork>(Elements);
-		sorted.Sort();
-		return sorted.Last();
+		NeuralNetwork best = Elements[0];
+		foreach(NeuralNetwork element in Elements)
+		{
+			if(element.Fitness > best.Fitness)
+			{
+				best = element;
+			}
+		}
+
+		return best;
 	}
 
 	public static List<NeuralNetwork> GenerateNetworks(int amount, int numberOfInputs, int numberOfOutputs)

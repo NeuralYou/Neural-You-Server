@@ -57,6 +57,7 @@ namespace ConsoleTCPServer
 					Console.WriteLine($"Processed population");
 
 					FolderUtils.StorePopulation(population, path);
+					Console.WriteLine("Population size: " + population.Elements.Count);
 					FolderUtils.StoreBest(population.GetFittest());
 
 					population = ApplyGeneticOperators(population);

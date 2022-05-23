@@ -69,8 +69,8 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 		inputs = new InputNeuron[i_NumberOfInputs];
 		outputs = new OutputNeuron[i_NumberOfOutputs];
 
-		int numberOfHiddenNeurons = 4;
-		// int numberOfHiddenNeurons = (i_NumberOfInputs * 2) + 1;
+		// int numberOfHiddenNeurons = 4;
+		int numberOfHiddenNeurons = (i_NumberOfInputs * 2) + 1;
 		hidden = new HiddenNeuron[numberOfHiddenNeurons];
 		InitNeurons();
 	}
