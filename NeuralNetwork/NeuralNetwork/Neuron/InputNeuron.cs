@@ -9,7 +9,7 @@ public class InputNeuron : Neuron
 
 		for (int i = 0; i < outputWeights.Length; i++)
 		{
-			outputWeights[i] = RandomUtils.RandomRange(-1f, 1f);
+			outputWeights[i] = (float) RandomUtils.RandomRangeNormal(0,1);
 		}
 	}
 
@@ -27,7 +27,7 @@ public class InputNeuron : Neuron
 
 	internal void MutateWeight(int index)
 	{
-		float value = RandomUtils.RandomRange(-3f, 3f);
+		float value = (float) RandomUtils.RandomRangeNormal(0, 0.5d);
 		outputWeights[index] += value;
 	}
 }

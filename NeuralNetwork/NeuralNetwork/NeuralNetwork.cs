@@ -146,7 +146,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 			for(int i = 0; i < n.outputWeights.Length; i++)
 			{
 				if(RandomUtils.RollOdds(mutationRate))
-					n.outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+					n.outputWeights[i] += (float) RandomUtils.RandomRangeNormal(0, 1d);
 			}
 				
 				// mutateNode(i);
@@ -158,7 +158,7 @@ public class NeuralNetwork : System.IComparable<NeuralNetwork>
 			for(int i = 0; i < n.outputWeights.Length; i++)
 			{
 				if(RandomUtils.RollOdds(mutationRate))
-					n.outputWeights[i] += RandomUtils.RandomRange(-3f, 3f);
+					n.outputWeights[i] +=(float) RandomUtils.RandomRangeNormal(0, 1d);
 			}
 
 		}
