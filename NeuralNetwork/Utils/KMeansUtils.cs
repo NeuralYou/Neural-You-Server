@@ -104,7 +104,7 @@ public static class KMeansUtils
 		return (float) System.Math.Sqrt(diffSquaredSum);
 	}
 
-        private static float distance(NeuralNetwork element1, NeuralNetwork element2)
+    private static float distance(NeuralNetwork element1, NeuralNetwork element2)
 	{
 		float[] diffSquaredSums = new float[element1.Genome.Length];
 		float diffSquaredSum = 0;
@@ -118,4 +118,18 @@ public static class KMeansUtils
 
 		return (float) System.Math.Sqrt(diffSquaredSum);
 	}
+
+    public static int SortBuckets(List<NeuralNetwork> a, List<NeuralNetwork> b)
+    {
+        float avgA = 0, avgB = 0;
+        foreach(NeuralNetwork n in a)
+            avgA += n.Fitness;
+        avgA /= a.Count;
+
+        foreach(NeuralNetwork n in b)
+            avgB += n.Fitness;
+        avgB /= b.Count;
+
+        return Math.Sign(avgA - avgB);
+    }
 }
