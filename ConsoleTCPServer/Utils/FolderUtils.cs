@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 public static class FolderUtils
 {
 	public static void StorePopulation(Population population, string path)
 	{
-		//GenerateMetaData(population, path);
+		GenerateMetaData(population, path);
 
 		string[] elements = population.SerializeNetworks();
 		int num = 1;
@@ -25,37 +22,37 @@ public static class FolderUtils
 
 	}
 
-	// public static void GenerateMetaData(Population pop, string path)
-	// {
-	// 	float highestFitness = pop.GetFittest().Fitness;
-	// 	float averageFitness = 0;
+	public static void GenerateMetaData(Population pop, string path)
+	{
+		float highestFitness = pop.GetFittest().Fitness;
+		float averageFitness = 0;
 
-	// 	string fileName = "Population data.txt";
-	// 	string date = DateTime.Now.ToString();
+		string fileName = "Population data.txt";
+		string date = DateTime.Now.ToString();
 
-	// 	foreach (NeuralNetwork n in pop.Elements)
-	// 	{
-	// 		averageFitness += n.Fitness;
-	// 	}
+		foreach (NeuralNetwork n in pop.Elements)
+		{
+			averageFitness += n.Fitness;
+		}
 
-	// 	averageFitness /= pop.Size();
-	// 	string fullPath = Path.Combine(path, fileName);
-	// 	StreamWriter write = new StreamWriter(fullPath);
-	// 	write.Write("Date: " + date + "\n");
-	// 	write.Write("Elements in generation: " + pop.Size() + "\n");
-	// 	write.Write("Highest Fitness: " + highestFitness + "\n");
-	// 	write.Write("Average Fitness: " + averageFitness + "\n");
-	// 	write.Close();
-	// }
+		averageFitness /= pop.Size();
+		string fullPath = Path.Combine(path, fileName);
+		StreamWriter write = new StreamWriter(fullPath);
+		write.Write("Date: " + date + "\n");
+		write.Write("Elements in generation: " + pop.Size() + "\n");
+		write.Write("Highest Fitness: " + highestFitness + "\n");
+		write.Write("Average Fitness: " + averageFitness + "\n");
+		write.Close();
+	}
 
 	//***************PATH IS HARD CODED!!!!!*******************//
 	//***************PATH IS HARD CODED!!!!!*******************//
 	public static string GetPathToCurrentFolder(bool createNew = true)
 	{
+		Console.WriteLine(Environment.CurrentDirectory);
 		string workingDirectory = Environment.CurrentDirectory;
-		string path = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
 
-		path = Path.Combine(path, "NeuralYou Data");
+		string path = Path.Combine(workingDirectory, "NeuralYou Data");
 		Directory.CreateDirectory(path);
 		string[] files = Directory.GetDirectories(path);
 		string today = DateTime.Today.ToShortDateString();
@@ -63,12 +60,12 @@ public static class FolderUtils
 		string s = Directory.GetDirectories(path).SingleOrDefault(file => file.Contains(today));
 
 		if (s is null)
-			s = Directory.CreateDirectory(path + @"\" + today).FullName;
+			s = Directory.CreateDirectory(Path.Combine(path, today)).FullName;
 
 		int amountOfFiles = Directory.GetDirectories(s).Length - 1;
 		amountOfFiles = createNew ? amountOfFiles + 1: amountOfFiles;
 
-		string pathToCurrent = Directory.CreateDirectory(s + @"\" + amountOfFiles).FullName;
+		string pathToCurrent = Directory.CreateDirectory(Path.Combine(s, amountOfFiles.ToString())).FullName;
 
 		return pathToCurrent;
 	}

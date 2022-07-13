@@ -43,7 +43,9 @@ namespace ConsoleTCPServer
 					TcpClient client = listener.AcceptTcpClient();
 					NetworkStream stream = client.GetStream();
 
-					RequestType type = (RequestType)Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
+					string rep = NetworkUtils.ReadInt(stream).ToString();
+					RequestType type = (RequestType) Enum.Parse(typeof(RequestType), rep);
+					// RequestType type = (RequestType)Enum.Parse(typeof(RequestType), NetworkUtils.ReadInt(stream).ToString());
 
 					Console.WriteLine($"Got Request: {type}");
 					if (type.Equals(RequestType.INIT))

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Newtonsoft.Json;
+using static EvolutionUtils;
 using System.Collections.Generic;
 
 public class Population
@@ -54,185 +55,20 @@ public class Population
 	}
 
 	public List<NeuralNetwork> ApplyGeneticOperators()
-	{
-		//Bucket version:
-		List<NeuralNetwork>[] clusters = KMeansUtils.Cluster(Elements, 10);
-		List<List<NeuralNetwork>> buckets = clusters.ToList();
-		
-		buckets.Sort((a, b) => 
-		{
-			float avgA = 0, avgB = 0;
-			foreach(NeuralNetwork n in a)
-				avgA += n.Fitness;
-			avgA /= a.Count;
+    {
+        //Clustering
+        List<NeuralNetwork> newGeneration = BucketOperators(Elements);
 
-			foreach(NeuralNetwork n in b)
-				avgB += n.Fitness;
-			avgB /= b.Count;
+        return newGeneration;
+    }
 
-			return Math.Sign(avgA - avgB);
-		});
-
-		int listCount = 0;
-		foreach(List<NeuralNetwork> list in buckets)
-		{
-			float avg = 0;
-			foreach(NeuralNetwork n in list)
-			{
-				avg += n.Fitness;
-			}
-
-			avg /= list.Count;
-			Console.WriteLine($"list {listCount++} average fitness: {avg}");
-		}
-
-		List<NeuralNetwork>[] elitists = new List<NeuralNetwork>[buckets.Count];
-		for(int i = 0; i < buckets.Count; i++)
-		{
-			elitists[i] = Elitists(buckets[i], 0.1f);
-		}
-		
-		buckets = BucketSelect(buckets, elitists);
-
-
-		for(int i = 0; i < buckets.Count; i++)
-		{
-			buckets[i] = Mutate(buckets[i], i + 1);
-		}
-
-		for(int i = 0; i < buckets.Count; i++)
-		{
-			buckets[i] = ResetFitness(buckets[i]);
-		}
-
-		List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
-		foreach(List<NeuralNetwork> bucket in buckets)
-		{
-			newGeneration.AddRange(bucket);
-		}
-
-		foreach(List<NeuralNetwork> elite in elitists)
-		{
-			newGeneration.AddRange(elite);
-		}
-
-		return newGeneration;
-
-		//No Bucket version:
-		// List<NeuralNetwork> elitists = Elitists(Elements, 0.1f);
-		// List<NeuralNetwork> newPopulation = Select(Elements);
-
-		// //Temporarily disabled crossover operator
-		// //newPopulation = Crossover(newPopulation);
-		// newPopulation = Mutate(newPopulation);
-		// newPopulation.AddRange(elitists);
-		// newPopulation = ResetFitness(newPopulation);
-		// Elements = newPopulation;
-	}
-
-	private List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration, float precentage)
-	{
-		int tenPercent = (int) (oldGeneration.Count * precentage);
-
-		List<NeuralNetwork> temp = new List<NeuralNetwork>(oldGeneration);
-		temp.Sort();
-
-		List<NeuralNetwork> elitists = temp.GetRange(temp.Count - tenPercent, tenPercent);
-
-		for(int i = 0; i < elitists.Count; i++)
-		{
-			elitists[i] = elitists[i].Clone();
-		}
-
-		return elitists;
-	}
-
-
-	public List<List<NeuralNetwork>> BucketSelect(List<List<NeuralNetwork>> oldGeneration, List<NeuralNetwork>[] elitists)
-	{
-		int bucketSize = m_PopulationSize / oldGeneration.Count;
-		List<List<NeuralNetwork>> newGeneration = new List<List<NeuralNetwork>>();
-		for(int i = 0; i < oldGeneration.Count; i++)
-		{
-			Console.WriteLine($"bucket number: {i}\t elements: {oldGeneration[i].Count}");
-		}
-
-		for(int i = 0; i < oldGeneration.Count; i++)
-		{
-			int eliteReductionSize = elitists[i].Count;
-			newGeneration.Add(Select(oldGeneration[i], bucketSize - eliteReductionSize));
-		}
-
-		return newGeneration;
-	}
-
-	public List<NeuralNetwork> Select(List<NeuralNetwork> oldBucket, int bucketSize)
-	{
-		List<NeuralNetwork> newBucket = new List<NeuralNetwork>();
-
-		for(int i = 0; i < bucketSize; i++)
-		{
-			NeuralNetwork winner = RandomUtils.Tournement(oldBucket, 3);
-			newBucket.Add(winner.Clone());
-		}
-
-		return newBucket;
-	}
-
-	//Crossover type is 1-point crossover
-	public List<NeuralNetwork> Crossover(List<NeuralNetwork> newGeneration)
-	{
-		for(int i = 0; i < newGeneration.Count; i++)
-		{
-			if(RandomUtils.RollOdds(0.4f))
-			{
-				NeuralNetwork other = newGeneration[RandomUtils.RandomRange(0, newGeneration.Count)];
-
-				float[] genome1 = newGeneration[i].Genome;
-				float[] genome2 = other.Genome;
-
-				int middle = genome1.Length / 2;
-				List<float> newGenome1 = new List<float>(genome1[0..middle]);
-				newGenome1.AddRange(genome2[middle..]);
-
-				List<float> newGenome2 = new List<float>(genome2[0..middle]);
-				newGenome2.AddRange(genome1[middle..]);
-
-				newGeneration[i].Genome = newGenome1.ToArray();
-				other.Genome = newGenome2.ToArray();
-			}
-		}
-
-		return newGeneration;
-	}
-
-	public List<NeuralNetwork> Mutate(List<NeuralNetwork> bucket, float bucketMutationChance)
-	{
-
-		for(int i = 0; i < bucket.Count; i++)
-		{
-			bucket[i].MutateNetwork(m_MutationRate);// * 1/bucketMutationChance);
-		}
-
-		return bucket;
-	}
-	private List<NeuralNetwork> ResetFitness(List<NeuralNetwork> newGeneration)
-	{
-		foreach(NeuralNetwork n in newGeneration)
-		{
-			n.Fitness = 0;
-		}
-
-		return newGeneration;
-	}
-
-	public string[] SerializeNetworks()
+    public string[] SerializeNetworks()
 	{ 
 		List<string> list = new List<string>();
 
 		foreach(NeuralNetwork n in Elements)
 		{
-			string json = JsonConvert.SerializeObject(n);
+			string json = JsonConvert.SerializeObject(n, Formatting.Indented);
 			list.Add(json);
 		}
 
