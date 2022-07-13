@@ -85,7 +85,6 @@ public static class KMeansUtils
             float clusterVariance = 1;
             foreach(float f in currentClusterMeans)
             {
-
             }
 
         }
@@ -107,9 +106,9 @@ public static class KMeansUtils
     private static float distance(NeuralNetwork element1, NeuralNetwork element2)
 	{
 		float[] diffSquaredSums = new float[element1.Genome.Length];
+        float[] genome1 = element1.Genome, genome2 = element2.Genome;
 		float diffSquaredSum = 0;
 
-        float[] genome1 = element1.Genome, genome2 = element2.Genome;
 
 		for(int i = 0; i < genome1.Length; i++)
 		{

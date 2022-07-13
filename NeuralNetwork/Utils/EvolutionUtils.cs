@@ -3,6 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 public static class EvolutionUtils
 {
+
+public static List<NeuralNetwork> BucketOperators(List<NeuralNetwork> elements)
+    {
+        List<NeuralNetwork>[] clusters = KMeansUtils.Cluster(elements, 10);
+        List<List<NeuralNetwork>> buckets = clusters.ToList();
+
+        buckets.Sort((KMeansUtils.SortBuckets));
+
+        //Elitism
+        List<NeuralNetwork>[] elitists = new List<NeuralNetwork>[buckets.Count];
+        for (int i = 0; i < buckets.Count; i++)
+        {
+            elitists[i] = Elitists(buckets[i], 0.1f);
+        }
+
+        //Selection
+        buckets = BucketSelect(buckets, elitists, elements.Count);
+
+        //Mutation
+        BucketMutation(buckets);
+
+        ResetFitness(buckets);
+
+        //Apply Elitism
+        List<NeuralNetwork> newGeneration = new List<NeuralNetwork>();
+        foreach (List<NeuralNetwork> bucket in buckets)
+        {
+            newGeneration.AddRange(bucket);
+        }
+
+        foreach (List<NeuralNetwork> elite in elitists)
+        {
+            newGeneration.AddRange(elite);
+        }
+
+        return newGeneration;
+    }
+
     public static List<NeuralNetwork> Elitists(List<NeuralNetwork> oldGeneration, float precentage)
 	{
 		int tenPercent = (int) (oldGeneration.Count * precentage);
@@ -101,4 +139,20 @@ public static class EvolutionUtils
 
 		return newGeneration;
 	}
+
+	public static void BucketMutation(List<List<NeuralNetwork>> buckets)
+    {
+        for (int i = 0; i < buckets.Count; i++)
+        {
+            buckets[i] = Mutate(buckets[i], i + 1);
+        }
+    }
+
+	public static void ResetFitness(List<List<NeuralNetwork>> buckets)
+    {
+        for (int i = 0; i < buckets.Count; i++)
+        {
+            buckets[i] = ResetFitness(buckets[i]);
+        }
+    }
 }
